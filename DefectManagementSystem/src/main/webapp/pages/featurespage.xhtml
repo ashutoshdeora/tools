@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/templates/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="metadata">
+	</ui:define>
+	<ui:define name="content">
+
+
+		<h:form>
+			<div>
+				<p:dataTable id="feat_datatable" widgetVar="featTable"
+					value="#{featureDataManagedBean.featurDataList}" var="fea"
+					rows="10" paginator="true" rowIndexVar="rowIndex"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="10,20,50" scrollable="true" scrollWidth="100%"
+					tableStyleClass="datatable_styles" rowStyleClass="column_style">
+					<f:facet name="header">
+						<h:outputText value="Feature Details" />
+						<div style="float: right">
+							<p:commandLink id="xls" ajax="false">
+								<p:graphicImage value="/resources/images/excel.png" />
+								<pe:exporter type="xlsx" target="feat_datatable"
+									fileName="fetureDetailsResult" />
+							</p:commandLink>
+						</div>
+					</f:facet>
+
+					<p:column headerText="Feature Number">
+						<h:outputText value="#{fea.featureNumber}" />
+
+						<h:panelGroup>
+							<p:steps activeIndex="2" styleClass="custom" readonly="false">
+								<p:menuitem value="Created" url="#" />
+								<p:menuitem value="Waiting to be Test" url="#" />
+								<p:menuitem value="Tested" url="#" />
+								<p:menuitem value="Integerated" url="#" />
+							</p:steps>
+						</h:panelGroup>
+						<div>
+							<h:panelGroup layout="block">
+								<h:outputText id="output" value="#{homeManagedBean.number2}% " />
+								<h:inputHidden id="txt2" value="#{homeManagedBean.number2}" />
+								<p:slider for="txt2" display="output" disabled="true" />
+							</h:panelGroup>
+						</div>
+					</p:column>
+					<p:column headerText="Grouping">
+						<h:outputText value="#{fea.featureGrouping}" />
+					</p:column>
+					<p:column headerText="Test Script">
+						<h:outputText value="#{fea.featureTestScriptName}" />
+					</p:column>
+					<p:column headerText="Comments">
+						<h:outputText value="#{fea.featureTestScriptComments}" />
+					</p:column>
+					<p:column headerText="Phase">
+						<h:outputText value="#{fea.featureTestExecutionPhase}" />
+					</p:column>
+					<p:column headerText="Owner">
+						<h:outputText value="#{fea.featureOwner}" />
+					</p:column>
+					<p:column headerText="Data Set Cat">
+						<h:outputText value="#{fea.featureDataSetCatagoery}" />
+					</p:column>
+
+
+					<p:column filterBy="#{fea.featureRollOut}" headerText="RollOut"
+						footerText="in" filterMatchMode="in">
+						<!-- <f:facet name="filter">
+							<p:selectCheckboxMenu label="RollOut" value="Y"
+								onchange="PF('featTable').filter()" panelStyle="width:125px"
+								scrollHeight="150">
+								<f:selectItem itemLabel="{featureDataManagedBean.rolloutOption}" itemValue="{featureDataManagedBean.rolloutOption}"/>
+							</p:selectCheckboxMenu>
+						</f:facet> -->
+						<h:outputText value="#{fea.featureRollOut}" />
+					</p:column>
+					<p:column headerText="Status">
+						<h:outputText value="#{fea.featureStatus}" />
+					</p:column>
+					<p:column headerText="Execution">
+						<h:outputText value="#{fea.featureTestExecution}" />
+					</p:column>
+					<p:column headerText="Account Details">
+
+						<p:dataList value="#{fea.accounts}" var="acc" rowIndexVar="rowInd"
+							itemStyleClass="list_style" styleClass="plik_style content_style">
+
+							<p:link outcome="/pages/accountspage.xhtml"
+								value="#{rowInd+1}.) #{acc.accountName}"
+								styleClass="anchor_style">
+								<f:param name="selectedAccountId" value="#{acc.accountName}" />
+							</p:link>
+						</p:dataList>
+
+					</p:column>
+					<p:column headerText="Data Set">
+						<p:dataList id="dlist_feature" value="#{fea.dataSets}" var="dts"
+							itemStyleClass="list_style" styleClass="plik_style content_style"
+							rowIndexVar="rowInd">
+
+							<p:link outcome="/pages/datasetpage.xhtml"
+								value="#{rowInd+1}.) #{dts.dataSetLocation}"
+								styleClass="anchor_style">
+								<f:param name="selectedDataSetLocation"
+									value="#{dts.dataSetLocation}" />
+							</p:link>
+
+						</p:dataList>
+					</p:column>
+
+					<p:column headerText="Defects">
+						<p:dataList value="#{fea.defectsList}" var="defL"
+							itemStyleClass="list_style" styleClass="plik_style content_style"
+							rowIndexVar="rowInd">
+							<p:link outcome="/pages/defectspage.xhtml"
+								value="#{rowInd+1}.) #{defL.hpqcDefectID}"
+								styleClass="anchor_style">
+								<f:param name="selectedDefect" value="#{defL.hpqcDefectID}" />
+							</p:link>
+						</p:dataList>
+					</p:column>
+					<p:column headerText="BA">
+						<h:outputText value="#{fea.ba}" />
+					</p:column>
+					<p:column headerText="Owner">
+						<h:outputText value="#{fea.owner}" />
+					</p:column>
+				</p:dataTable>
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

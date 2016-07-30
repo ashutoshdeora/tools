@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core" template="/templates/template.xhtml">
+	<ui:define name="metadata">
+	</ui:define>
+	<ui:define name="content">
+		<h:form enctype="multipart/form-data">
+			<p:growl id="messages" showDetail="true" />
+
+			<p:fileUpload value="#{fileUploadView.file}" mode="advanced" fileUploadListener="#{fileUploadView.fileUploadListener}" allowTypes="/(\.|\/)(xls)$/"
+				 />
+
+			<!-- <h:panelGroup id="defectList_grp">
+				<p:commandButton value="Save in DB"></p:commandButton>
+				<p:dataTable value="#{fileUploadView.defectsList}" var="dlist" style="width:100%" draggableColumns="false" draggableRows="false" resizableColumns="true"
+					liveResize="true">
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.hpqcDefectID}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.assignedTo}" />
+					</p:column>
+
+					<p:column style="white-space: nowrap;overflow:hidden;width:100px">
+						<h:outputText value="#{dlist.summary}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.status}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.project}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.priority}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.severity}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.detectedinCycle}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.detectedBy}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.functionality}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.rootCause}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.detectedonDate}" />
+					</p:column>
+					<p:column style="white-space: nowrap;overflow:hidden;width:100px">
+						<h:outputText value="#{dlist.statusChangeComments}" />
+					</p:column>
+					<p:column style="white-space: nowrap;overflow:hidden;width:100px">
+						<h:outputText value="#{dlist.description}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.modified}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.targetCycle}" />
+					</p:column>
+					<p:column style="width:100px">
+						<h:outputText value="#{dlist.route}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup> -->
+
+		</h:form>
+	</ui:define>
+</ui:composition>

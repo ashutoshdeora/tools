@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core" template="/templates/template.xhtml"  xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="metadata">
+	</ui:define>
+	<ui:define name="content">
+
+
+		<h:form id="datasetpage_form">
+
+			<div>
+				<h:panelGroup>
+					<p:dataTable id="ds_datatable" value="#{dataSetManagedBean.dataSetsList}" var="dss"   rows="10" paginator="true"
+						rowIndexVar="rowIndex"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10,20,50" scrollable="true" scrollWidth="100%" tableStyleClass="datatable_styles" rowStyleClass="column_style">
+						<f:facet name="header">
+						<h:outputText value="Data Set " />
+						<div style="float:right">
+						<p:commandLink id="xls" ajax="false">
+							<p:graphicImage value="/resources/images/excel.png" />
+							<pe:exporter type="xlsx" target="ds_datatable" fileName="DataSetDetailsResult" />
+						</p:commandLink>
+						</div>
+						</f:facet>
+						<p:column headerText="Sr No.">
+							<h:outputText value="#{rowIndex+1}" />
+						</p:column>
+						<p:column headerText="DataSet Location">
+							<h:outputText value="#{dss.dataSetLocation}" />
+						</p:column>
+						
+						<p:column headerText="Features">
+							<p:dataList value="#{dss.features}" var="fea" rowIndexVar="rowInd" styleClass="plik_style content_style" itemStyleClass="list_style">
+
+								<p:link outcome="/pages/featurespage.xhtml" value="#{rowInd+1}.) #{fea.featureNumber}" styleClass="anchor_style">
+									<f:param name="selectedFeatureId" value="#{fea.featureNumber}" />
+								</p:link>
+
+
+							</p:dataList>
+						</p:column>
+					</p:dataTable>
+				</h:panelGroup>
+
+				<h:panelGroup>
+
+				</h:panelGroup>
+
+			</div>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

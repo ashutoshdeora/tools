@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head></h:head>
+<body>
+	<h:form>
+		<h:panelGroup>
+			<p:dataTable id="userTable" var="userdata"
+				value="#{timeEntryBean.userDataLists}" editable="true"
+				style="margin-bottom:20px;width:100% ">
+				<f:facet name="header">Time Sheet</f:facet>
+				<p:column headerText="Resource Name">
+					<h:outputText value="#{userdata.userName}" />
+				</p:column>
+
+				<p:column headerText="Emp Id">
+					<h:outputText value="#{userdata.empId}" />
+				</p:column>
+
+				<p:column headerText="Date">
+					<p:calendar id="inline" value="#{userdata.selectedDate}" />
+				</p:column>
+
+				<p:column headerText="WorkStream">
+					<p:selectOneMenu id="wrkstrm"
+						value="#{userdata.dropDownView.workstream}">
+						<p:ajax listener="#{dropdownView.onWorkStreamChange}" update="act" />
+						<f:selectItem itemLabel="Select WorkStream" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{userdata.dropDownView.workStreams}" />
+					</p:selectOneMenu>
+				</p:column>
+
+
+				<p:column headerText="Activity">
+					<p:selectOneMenu id="act" value="#{userdata.dropDownView.activity}">
+						<f:selectItem itemLabel="Select Activity" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{userdata.dropDownView.activities}" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="Hours">
+					<p:inputText value=""></p:inputText>
+				</p:column>
+
+				<p:column headerText="Comments">
+					<p:inputText value=""></p:inputText>
+				</p:column>
+
+				<p:column headerText="Billable To Client">
+					<p:inputText value=""></p:inputText>
+				</p:column>
+
+				<p:columnGroup type="footer">
+					<p:row>
+						<p:column colspan="6" style="text-align:right"
+							footerText="Totals:" />
+						<p:column footerText="Somedata" />
+
+						<p:column footerText="Somedata" />
+					</p:row>
+				</p:columnGroup>
+			</p:dataTable>
+			<p:commandButton value="Add Row"
+				actionListener="#{timeEntryBean.addNewRow()}" update="userTable" />
+
+		</h:panelGroup>
+
+		<h:panelGroup>
+			<div>
+				<p:calendar onselect="#{timeEntryBean.populateSelectedWeek}"></p:calendar>
+			</div>
+
+
+			<p:dataTable id="userTablecurrent" var="userdata"
+				value="#{timeEntryBean.userDataLists}" editable="true"
+				style="margin-bottom:20px;width:100% ">
+				<f:facet name="header">Time Sheet</f:facet>
+				<f:facet name="header">
+					<p:outputLabel value="Name" />
+					<p:outputLabel value="User Name" />
+					<p:outputLabel value="Emp ID" />
+					<p:outputLabel value="0147B0" />
+				</f:facet>
+				<p:column headerText="WorkStream">
+					<p:selectOneMenu id="wrkstrm"
+						value="#{userdata.dropDownView.workstream}">
+						<p:ajax listener="#{dropdownView.onWorkStreamChange}" update="act" />
+						<f:selectItem itemLabel="Select WorkStream" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{userdata.dropDownView.workStreams}" />
+					</p:selectOneMenu>
+				</p:column>
+
+
+				<p:column headerText="Activity">
+					<p:selectOneMenu id="act" value="#{userdata.dropDownView.activity}">
+						<f:selectItem itemLabel="Select Activity" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{userdata.dropDownView.activities}" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="Hours">
+					<p:inputText value=""></p:inputText>
+				</p:column>
+
+				<p:column headerText="Comments">
+					<p:inputText value=""></p:inputText>
+				</p:column>
+				
+				<p:column></p:column>
+
+			</p:dataTable>
+
+		</h:panelGroup>
+	</h:form>
+</body>
+</html>

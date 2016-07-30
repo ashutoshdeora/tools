@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+	<navigation-rule>
+		<from-view-id>/pages/home.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loginredirect</from-outcome>
+			<to-view-id>/pages/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/accountspage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loginredirect</from-outcome>
+			<to-view-id>/pages/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/featurespage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loginredirect</from-outcome>
+			<to-view-id>/pages/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/datasetpage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loginredirect</from-outcome>
+			<to-view-id>/pages/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/defectspage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loginredirect</from-outcome>
+			<to-view-id>/pages/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/login.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>loggedIn</from-outcome>
+			<to-view-id>/pages/home.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<application>
+		<resource-bundle>
+			<base-name>com.clarity.messages</base-name>
+			<var>msgs</var>
+		</resource-bundle>
+	</application>
+</faces-config>

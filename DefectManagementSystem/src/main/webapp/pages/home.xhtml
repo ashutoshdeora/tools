@@ -1,0 +1,252 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/templates/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="metadata">
+	</ui:define>
+	<ui:define name="content">
+
+
+		<h:form id="fea_runForm">
+			<p:growl id="msgs" showDetail="true" />
+			<p:panel id="fet_run_panel" header="Select a Feature for Run"
+				style="margin-bottom:10px;"
+				rendered="#{homeManagedBean.panelPermission}">
+				<h:panelGrid id="tab1" columns="2" rowClasses="table_column_style ">
+
+					<h:panelGrid columns="2">
+						<p:outputLabel for="feature_dropD" value="Feature: " />
+						<p:selectOneMenu id="feature_dropD"
+							value="#{homeManagedBean.selectedfeature}" style="width:150px">
+							<p:ajax listener="#{homeManagedBean.onFeatureChange}"
+								update="Account_dropD,dataSet_dropD" />
+							<f:selectItem itemLabel="Select Feature" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems
+								value="#{homeManagedBean.featurDataListForDropDown}" var="items"
+								itemLabel="#{items.featureNumber}"
+								itemValue="#{items.featureNumber}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="Account_dropD" value="Account " />
+						<p:selectOneMenu id="Account_dropD"
+							value="#{homeManagedBean.selectedAccount}" style="width:150px">
+							<f:selectItem itemLabel="Select Account" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{homeManagedBean.accountsForDropDown}"
+								var="accItems" itemValue="#{accItems.accountName}"
+								itemLabel="#{accItems.accountName}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="dataSet_dropD" value="Data Set " />
+						<p:selectOneMenu id="dataSet_dropD"
+							value="#{homeManagedBean.selectedDataSet}" style="width:150px">
+							<f:selectItem itemLabel="Select Data Set" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{homeManagedBean.dataSetsListForDropDown}"
+								var="dsItems" itemValue="#{dsItems.dataSetLocation}"
+								itemLabel="#{dsItems.dataSetLocation}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="fet_ph_run" value="Feature run Phase :" />
+
+						<p:selectOneMenu id="fet_ph_run"
+							value="#{homeManagedBean.selectedFeaturePhase}"
+							style="width:150px">
+							<f:selectItem itemLabel="Select Feature Phase" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems
+								value="#{homeManagedBean.listFeaturePhaseExecutionForDropDown}"
+								var="fpItems" itemValue="#{fpItems.testPhase}"
+								itemLabel="#{fpItems.testPhase}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel value="Comments for Run" for="commentsText" />
+						<p:inputTextarea id="commentsText"
+							value="#{homeManagedBean.testScriptComments}" />
+
+						<h:outputLabel value="Run Status" for="testRes_dropD" />
+						<p:selectOneMenu id="testRes_dropD"
+							value="#{homeManagedBean.featurerunExecutionResult}"
+							style="width:150px">
+							<p:ajax listener="#{homeManagedBean.onResultChange}"
+								update="def_grp" />
+							<f:selectItem itemLabel="Select Result" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems
+								value="#{homeManagedBean.listForFeatureTestExecutionResult}"
+								var="lsItems" itemValue="#{lsItems.featureTestResult}"
+								itemLabel="#{lsItems.featureTestResult}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+					<h:panelGroup id="def_grp">
+						<p:commandButton value="Add Defects"
+							action="#{homeManagedBean.addMoreDefects}"
+							update="new-def_grp new_table"
+							disabled="#{!(homeManagedBean.showDefectGroup)}" type="submit" />
+						<h:panelGroup id="new-def_grp">
+							<h:dataTable id="new_table" var="def"
+								value="#{homeManagedBean.defectaddingList}">
+								<h:column>
+									<h:outputLabel value="Defect ID: " />
+									<h:inputText value="#{def}" />
+								</h:column>
+							</h:dataTable>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGroup id="update_grp" style="padding-left:30%">
+					<p:commandButton type="submit" ajax="true" value="Update Data"
+						action="#{homeManagedBean.saveAllData}" update="table_pgrp" />
+				</h:panelGroup>
+			</p:panel>
+
+
+			<h:panelGroup id="table_pgrp" layout="block"
+				rendered="#{homeManagedBean.tablePermission}">
+				<p:dataTable id="allData"
+					value="#{homeManagedBean.testExecutionsList}" var="list" rows="10"
+					paginator="true" rowIndexVar="rowIndex"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="10,20,50" tableStyleClass="datatable_styles" editable="true"
+					rowStyleClass="column_style">
+					<f:facet name="header">
+						<div>
+							<h2>
+								<h:outputText value="Feature Run Details" />
+							</h2>
+							<div style="float: right">
+								<p:commandLink id="xls" ajax="false">
+									<p:graphicImage value="/resources/images/excel.png" />
+									<pe:exporter type="xlsx" target="allData"
+										fileName="TestExecutionResult" />
+								</p:commandLink>
+							</div>
+						</div>
+					</f:facet>
+					<p:ajax event="rowEdit" listener="#{homeManagedBean.onRowEdit}"
+						update=":fea_runForm:msgs" />
+					<p:ajax event="rowEditCancel"
+						listener="#{homeManagedBean.onRowCancel}"
+						update=":fea_runForm:msgs" />
+
+					<p:column headerText="Feature ID"
+						filterBy="#{list.featureRun.featureNumber}"
+						filterMatchMode="contains"
+						sortBy="#{list.featureRun.featureNumber}">
+						<div>
+							<p:link outcome="/pages/featurespage.xhtml"
+								value="#{list.featureRun.featureNumber}"
+								styleClass="anchor_style">
+								<f:param name="selectedFeatureId"
+									value="#{list.featureRun.featureNumber}" />
+							</p:link>
+						</div>
+					</p:column>
+					<p:column headerText="Account Name"
+						filterBy="#{list.accountRun.accountName}"
+						filterMatchMode="contains" sortBy="#{list.accountRun.accountName}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:link outcome="/pages/accountspage.xhtml"
+									value="#{list.accountRun.accountName}"
+									styleClass="anchor_style">
+									<f:param name="selectedAccountId"
+										value="#{list.accountRun.accountName}" />
+								</p:link>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="acc_edit"
+									value="#{list.accountRun.accountName}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Data Set"
+						filterBy="#{list.dataSetRun.dataSetLocation}"
+						filterMatchMode="contains"
+						sortBy="#{list.dataSetRun.dataSetLocation}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:link outcome="/pages/datasetpage.xhtml"
+									value="#{list.dataSetRun.dataSetLocation}"
+									styleClass="anchor_style">
+									<f:param name="selectedDataSetLocation"
+										value="#{list.dataSetRun.dataSetLocation}" />
+								</p:link>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="ds_edit"
+									value="#{list.dataSetRun.dataSetLocation}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Defects"
+						filterBy="#{list.dataSetRun.dataSetLocation}"
+						filterMatchMode="contains"
+						sortBy="#{list.dataSetRun.dataSetLocation}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:dataList value="#{list.defectslist}" var="defL"
+									itemStyleClass="list_style"
+									styleClass="plik_style content_style">
+									<p:link outcome="/pages/defectspage.xhtml"
+										value="#{defL.hpqcDefectID}" styleClass="anchor_style">
+										<f:param name="selectedDefect" value="#{defL.hpqcDefectID}" />
+									</p:link>
+								</p:dataList>
+							</f:facet>
+							<f:facet name="input">
+								<p:dataList value="#{list.defectslist}" var="defL"
+									itemStyleClass="list_style"
+									styleClass="plik_style content_style">
+									<p:inputText id="def_edit" value="#{defL.hpqcDefectID}"
+										style="width:100%" />
+								</p:dataList>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Test Phase"
+						filterBy="#{list.testExecutionPhase}" filterMatchMode="contains"
+						sortBy="#{list.testExecutionPhase}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{list.testExecutionPhase}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="exe_edit" value="#{list.testExecutionPhase}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Execution" filterBy="#{list.testStatus}"
+						filterMatchMode="contains" sortBy="#{list.testStatus}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{list.testStatus}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="stat_edit" value="#{list.testStatus}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Site Name"
+						filterBy="#{list.siteRun.siteName}" filterMatchMode="contains"
+						sortBy="#{list.siteRun.siteName}">
+						<h:outputText value="#{list.siteRun.siteName}" />
+					</p:column>
+					<p:column headerText="Route Name"
+						filterBy="#{list.routeRun.routeName}" filterMatchMode="contains"
+						sortBy="list.routeRun.routeName">
+						<h:outputText value="#{list.routeRun.routeName}" />
+					</p:column>
+					<p:column styleClass="cell_editor_style">
+						<p:rowEditor />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
