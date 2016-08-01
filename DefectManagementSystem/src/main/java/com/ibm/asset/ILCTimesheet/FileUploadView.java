@@ -663,7 +663,9 @@ public class FileUploadView implements Serializable {
 			execution.setSiteRun(site);
 			execution.setRouteRun(route);
 			execution.setRecordCreation(createRecord());
+			execution.setActiveData("ac");
 			entityManager.persist(execution);
+			
 
 		}
 		entityManager.getTransaction().commit();

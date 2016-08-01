@@ -14,7 +14,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+
 import com.ibm.utils.defmng.model.Account;
+import com.ibm.utils.defmng.model.Defect;
 import com.ibm.utils.defmng.model.Feature;
 
 @ManagedBean
@@ -34,6 +38,7 @@ public class AccountsManagedBean implements Serializable {
 	private List<Account> accounts;
 	@ManagedProperty(value = "#{loginManagedBean}")
 	private LoginManagedBean loginManagedBean;
+	private TreeNode root;
 
 	/**
 	 * 
@@ -59,7 +64,7 @@ public class AccountsManagedBean implements Serializable {
 					// it will change on for user access
 					accounts = new ArrayList<Account>();
 					accounts = retriveAllAccountList();
-
+					createTree();
 				}
 				
 			}
@@ -69,6 +74,39 @@ public class AccountsManagedBean implements Serializable {
 		}
 	}
 
+	
+	private void createTree(){
+		root = new DefaultTreeNode("Account", null);
+		
+		for(Account account:accounts){
+			TreeNode accountTreeNode = new DefaultTreeNode(account.getAccountName(),root);
+			for(Feature feature :account.getFeatures()){
+				TreeNode featureNode = new DefaultTreeNode(feature.getFeatureNumber(),accountTreeNode);
+				for(Defect defect:feature.getDefectsList()){
+					TreeNode defectNode = new DefaultTreeNode(defect.getHpqcDefectID(),featureNode);
+					featureNode.getChildren().add(defectNode);
+				}
+				accountTreeNode.getChildren().add(featureNode);
+			}
+			root.getChildren().add(accountTreeNode);
+		}
+		
+        TreeNode node0 = new DefaultTreeNode("Node 0", root);
+        TreeNode node1 = new DefaultTreeNode("Node 1", root);
+         
+        TreeNode node00 = new DefaultTreeNode("Node 0.0", node0);
+        TreeNode node01 = new DefaultTreeNode("Node 0.1", node0);
+         
+        TreeNode node10 = new DefaultTreeNode("Node 1.0", node1);
+         
+        node1.getChildren().add(new DefaultTreeNode("Node 1.1"));
+        node00.getChildren().add(new DefaultTreeNode("Node 0.0.0"));
+        node00.getChildren().add(new DefaultTreeNode("Node 0.0.1"));
+        node01.getChildren().add(new DefaultTreeNode("Node 0.1.0"));
+        node10.getChildren().add(new DefaultTreeNode("Node 1.0.0"));
+        root.getChildren().add(new DefaultTreeNode("Node 2"));
+	}
+	
 	@SuppressWarnings("unchecked")
 	private List<Account> retriveAllAccountList() {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
@@ -138,6 +176,20 @@ public class AccountsManagedBean implements Serializable {
 	 */
 	public void setLoginManagedBean(LoginManagedBean loginManagedBean) {
 		this.loginManagedBean = loginManagedBean;
+	}
+
+	/**
+	 * @return the root
+	 */
+	public TreeNode getRoot() {
+		return root;
+	}
+
+	/**
+	 * @param root the root to set
+	 */
+	public void setRoot(TreeNode root) {
+		this.root = root;
 	}
 
 }

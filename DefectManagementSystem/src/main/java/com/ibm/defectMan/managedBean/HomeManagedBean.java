@@ -20,6 +20,7 @@ import org.primefaces.event.RowEditEvent;
 import com.ibm.utils.defmng.model.Account;
 import com.ibm.utils.defmng.model.DataSet;
 import com.ibm.utils.defmng.model.Defect;
+import com.ibm.utils.defmng.model.DefectBean;
 import com.ibm.utils.defmng.model.Feature;
 import com.ibm.utils.defmng.model.MasterData;
 import com.ibm.utils.defmng.model.RecordCreation;
@@ -33,6 +34,11 @@ public class HomeManagedBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final String ACTIVEDATA = "ac";
+	private static final String DEACTIVEDATA = "dc";
+	private static final String FAILED ="Failed";
+	private static final String PASSEDWWA = "Passed with W/O";
+
 	public HomeManagedBean() {
 
 	}
@@ -43,7 +49,7 @@ public class HomeManagedBean implements Serializable {
 	private List<Account> accountsForDropDown;
 	private List<DataSet> dataSetsListForDropDown;
 	private List<MasterData> masterDatasList;
-	private List<String> defectaddingList;
+	private List<DefectBean> defectaddingList;
 	private List<MasterData> listForFeatureTestExecutionResult;
 	private List<MasterData> listFeaturePhaseExecutionForDropDown;
 
@@ -54,7 +60,6 @@ public class HomeManagedBean implements Serializable {
 	private String testScriptComments;
 	private String defect;
 	private String selectedFeaturePhase;
-
 
 	private boolean showDefectGroup;
 	private boolean tablePermission;
@@ -79,14 +84,14 @@ public class HomeManagedBean implements Serializable {
 					retriveMasterData();
 					retriveMasterDataForFeatureResult();
 					showDefectGroup = false;
-					defectaddingList = new ArrayList<String>();
+					defectaddingList = new ArrayList<DefectBean>();
 
 				}
-				
+
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			
+
 		}
 	}
 
@@ -105,9 +110,10 @@ public class HomeManagedBean implements Serializable {
 	}
 
 	public void onResultChange() {
-		if ((featurerunExecutionResult.equalsIgnoreCase("Failed")) || (featurerunExecutionResult.equalsIgnoreCase("Passed W"))) {
+		if ((featurerunExecutionResult.equalsIgnoreCase(FAILED))
+				|| (featurerunExecutionResult.equalsIgnoreCase(PASSEDWWA))) {
 			showDefectGroup = true;
-			defectaddingList.add(new String());
+			defectaddingList.add(new DefectBean());
 		} else {
 			showDefectGroup = false;
 		}
@@ -116,7 +122,7 @@ public class HomeManagedBean implements Serializable {
 	public void addMoreDefects() {
 		System.out.println("I am called");
 		if (showDefectGroup) {
-			defectaddingList.add(new String());
+			defectaddingList.add(new DefectBean());
 			showDefectGroup = true;
 		}
 		System.out.println(defectaddingList.size());
@@ -135,21 +141,19 @@ public class HomeManagedBean implements Serializable {
 			}
 		}
 
-		for (Account account : featureRun.getAccounts()) {
+		for (Account account : accountsForDropDown) {
 			if (account.getAccountName().equalsIgnoreCase(selectedAccount)) {
 				accountRun = account;
 				break;
 			}
 		}
 
-		for (DataSet dataSet : featureRun.getDataSets()) {
+		for (DataSet dataSet : dataSetsListForDropDown) {
 			if (dataSet.getDataSetLocation().equalsIgnoreCase(selectedDataSet)) {
 				dataSetRun = dataSet;
 				break;
 			}
 		}
-		
-		
 
 		testExecution.setFeatureRun(featureRun);
 		testExecution.setAccountRun(accountRun);
@@ -157,37 +161,151 @@ public class HomeManagedBean implements Serializable {
 		testExecution.setTestScriptComments(testScriptComments);
 		testExecution.setTestExecutionPhase(selectedFeaturePhase);
 		testExecution.setTestStatus(featurerunExecutionResult);
+		testExecution.setActiveData(ACTIVEDATA);
 		testExecution.setRecordCreation(createRecord());
-
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
 
-		List<Defect> tempDefList = entityManager.createQuery("select df from Defect df where hpqcDefectID IN :defects")
-				.setParameter("defects", defectaddingList).getResultList();
-		testExecution.setDefectslist(tempDefList);
+		if ((featurerunExecutionResult.equalsIgnoreCase("Passed with W/O"))
+				|| (featurerunExecutionResult.equalsIgnoreCase("Failed"))) {
+			if (!defectaddingList.contains(null)) {
+				List<String> tempL = new ArrayList<String>();
+				for (DefectBean defectBean : defectaddingList) {
+					tempL.add(defectBean.getHPQCID());
+				}
+				List<Defect> tempDefList = new ArrayList<Defect>();
+				tempDefList = entityManager.createQuery("select df from Defect df where df.hpqcDefectID IN :defects")
+						.setParameter("defects", tempL).getResultList();
+				testExecution.setDefectslist(tempDefList);
+			} else {
+				// show faces messages
+			}
+		}
+
 		entityManager.persist(testExecution);
 		entityManager.getTransaction().commit();
 		entityManager.close();
 		testExecutionsList = populateUserSpecificData();
-		// not adding defects to list as data not proper , will add defects once
-		// data is there.
-
-		// now reset all data
-
 		showDefectGroup = false;
-		defectaddingList = new ArrayList<String>();
+		defectaddingList = new ArrayList<DefectBean>();
 
 	}
-	
+
+	// insert new row and update the old row and make it deactivated
+	// and refresh the table
+	@SuppressWarnings("unchecked")
 	public void onRowEdit(RowEditEvent event) {
-        FacesMessage msg = new FacesMessage("Car Edited", ((TestExecution) event.getObject()).getTestExecutionPhase());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-     
-    public void onRowCancel(RowEditEvent event) {
-        FacesMessage msg = new FacesMessage("Edit Cancelled", ((TestExecution) event.getObject()).getTestExecutionPhase());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
+		try {
+			TestExecution execution = new TestExecution();
+			execution = (TestExecution) event.getObject();
+
+			EntityManager entityManager = getEntitymanagerFromCurrent();
+			entityManager.getTransaction().begin();
+			// check new record
+			List<String> tempL = new ArrayList<String>();
+			for (Defect defect : execution.getDefectslist()) {
+				tempL.add(defect.getHpqcDefectID());
+			}
+			List<Defect> tempDefList = new ArrayList<Defect>();
+			tempDefList = entityManager.createQuery("select df from Defect df where df.hpqcDefectID IN :defects")
+					.setParameter("defects", tempL).getResultList();
+			entityManager.getTransaction().commit();
+			entityManager.close();
+			// user can remove all defects from feature Run.
+			if (tempDefList != null && tempDefList.size() > 0) {
+				execution.setDefectslist(tempDefList);
+			}else{
+				// if feature run is failed or passed with W/o defect list cannot be empty.
+				if(execution.getTestStatus().equalsIgnoreCase(FAILED) || execution.getTestStatus().equalsIgnoreCase(PASSEDWWA)){
+					throw new Exception("Defects cannot be removed for Failed or Password With WO features");
+				}else{
+					execution.setDefectslist(null);
+				}
+			}
+
+			Feature featureRun = new Feature();
+			Account accountRun = new Account();
+			DataSet dataSetRun = new DataSet();
+			for (Feature feature : featurDataListForDropDown) {
+				if (feature.getFeatureNumber().equalsIgnoreCase(execution.getFeatureRun().getFeatureNumber())) {
+					featureRun = feature;
+					break;
+				}
+			}
+
+			for (Account account : accountsForDropDown) {
+				if (account.getAccountName().equalsIgnoreCase(execution.getAccountRun().getAccountName())) {
+					accountRun = account;
+					break;
+				}
+			}
+
+			for (DataSet dataSet : dataSetsListForDropDown) {
+				if (dataSet.getDataSetLocation().equalsIgnoreCase(execution.getDataSetRun().getDataSetLocation())) {
+					dataSetRun = dataSet;
+					break;
+				}
+			}
+
+			// all three have to be true .
+			if (featureRun.getFeatureNumber() != null && accountRun.getAccountName() != null
+					&& dataSetRun.getDataSetLocation() != null) {
+				execution.setFeatureRun(featureRun);
+				execution.setAccountRun(accountRun);
+				execution.setDataSetRun(dataSetRun);
+			} else {
+				throw new Exception("Account/DataSet association Cannot be blank for a feature");
+			}
+
+			// update the existing row
+			// first retrive the row from db update that row as object coming
+			// from
+			// UI is changed .
+			entityManager = getEntitymanagerFromCurrent();
+			entityManager.getTransaction().begin();
+			TestExecution oldData = (TestExecution) entityManager
+					.createQuery("select ts from TestExecution ts where ts.testExecutionID=:ID")
+					.setParameter("ID", execution.getTestExecutionID()).getSingleResult();
+			oldData.setTestExecutionID(execution.getTestExecutionID());
+			oldData.setActiveData(DEACTIVEDATA);
+			RecordCreation recordCreation = new RecordCreation();
+			recordCreation = oldData.getRecordCreation();
+			recordCreation.setUpdatedBy(loginManagedBean.getUserName());
+			recordCreation.setUpdationDate(new Date());
+			oldData.setRecordCreation(recordCreation);
+			entityManager.merge(oldData);
+			entityManager.getTransaction().commit();
+			entityManager.close();
+
+			// insert new Data
+			execution.setActiveData(ACTIVEDATA);
+			execution.setRecordCreation(createRecord());
+			entityManager = getEntitymanagerFromCurrent();
+			entityManager.getTransaction().begin();
+			entityManager.persist(execution);
+			entityManager.getTransaction().commit();
+			entityManager.close();
+
+			// all relation of feature are related to feature run screen
+			// any change in feature run screen will result in change of all details for all entity.
+			// change all relation here and the commit all at once
+			
+			testExecutionsList = populateUserSpecificData();
+			FacesMessage msg = new FacesMessage("Row Edited",((TestExecution) event.getObject()).getTestExecutionPhase());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		} catch (Exception exception) {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Application/Data Error",
+					exception.getLocalizedMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
+		}
+	}
+
+	public void onRowCancel(RowEditEvent event) {
+		FacesMessage msg = new FacesMessage("Edit Cancelled",
+				((TestExecution) event.getObject()).getTestExecutionPhase());
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+	}
 
 	/**
 	 * 
@@ -201,16 +319,25 @@ public class HomeManagedBean implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private List<TestExecution> populateAllDataList() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+		List<TestExecution> tempExecutionlist = new ArrayList<TestExecution>();
+		tempExecutionlist = entityManager.createQuery("Select tx from TestExecution tx where tx.activeData=:activeData")
+				.setParameter("activeData", ACTIVEDATA).getResultList();
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return tempExecutionlist;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<TestExecution> populateAllDataListWithHistory() {
 
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
-
 		List<TestExecution> tempExecutionlist = new ArrayList<TestExecution>();
-
-		tempExecutionlist = entityManager.createQuery("Select tx from TestExecution tx").getResultList();
+		tempExecutionlist = entityManager.createQuery("Select tx from TestExecution tx ").getResultList();
 		entityManager.getTransaction().commit();
 		entityManager.close();
-
 		return tempExecutionlist;
 	}
 
@@ -218,33 +345,47 @@ public class HomeManagedBean implements Serializable {
 	private List<TestExecution> populateUserSpecificData() {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
-
 		List<TestExecution> tempExecutionlist = new ArrayList<TestExecution>();
-
-		tempExecutionlist = entityManager.createQuery("Select tx from TestExecution tx where tx.recordCreation.updatedBy = :userName")
-				.setParameter("userName", loginManagedBean.getUserName()).getResultList();
+		tempExecutionlist = entityManager
+				.createQuery(
+						"Select tx from TestExecution tx where tx.recordCreation.updatedBy = :userName and tx.activeData=:activeData")
+				.setParameter("userName", loginManagedBean.getUserName()).setParameter("activeData", ACTIVEDATA)
+				.getResultList();
 		entityManager.getTransaction().commit();
 		entityManager.close();
-
 		return tempExecutionlist;
 
 	}
-	
-	private void retriveAllListForPage(){
+
+	@SuppressWarnings("unchecked")
+	private List<TestExecution> populateUserSpecificDataWithHistory() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+		List<TestExecution> tempExecutionlist = new ArrayList<TestExecution>();
+		tempExecutionlist = entityManager
+				.createQuery("Select tx from TestExecution tx where tx.recordCreation.updatedBy = :userName ")
+				.setParameter("userName", loginManagedBean.getUserName()).getResultList();
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return tempExecutionlist;
+
+	}
+
+	private void retriveAllListForPage() {
 		featurDataListForDropDown = new ArrayList<Feature>();
 		featurDataListForDropDown = retriveFeatureListFromDB();
 		accountsForDropDown = new ArrayList<Account>();
-		accountsForDropDown = retriveAllAccountListFromDB(); 
+		accountsForDropDown = retriveAllAccountListFromDB();
 		dataSetsListForDropDown = new ArrayList<DataSet>();
 		dataSetsListForDropDown = retriveAllDataSetListFromDB();
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<Feature> retriveFeatureListFromDB() {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
-		//List<Feature> tempList = new ArrayList<Feature>();
+		// List<Feature> tempList = new ArrayList<Feature>();
 		List<Feature> tempList = new ArrayList<Feature>();
 		tempList = entityManager.createQuery("select fe from Feature fe").getResultList();
 		entityManager.getTransaction().commit();
@@ -253,7 +394,7 @@ public class HomeManagedBean implements Serializable {
 		return tempList;
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<Account> retriveAllAccountListFromDB() {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
@@ -273,7 +414,7 @@ public class HomeManagedBean implements Serializable {
 		return tempList;
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<DataSet> retriveAllDataSetListFromDB() {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
@@ -290,7 +431,8 @@ public class HomeManagedBean implements Serializable {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
 		featurDataListForDropDown = new ArrayList<Feature>();
-		featurDataListForDropDown = entityManager.createQuery("select fe from Feature fe where fe.featureNumber=:featureNumber")
+		featurDataListForDropDown = entityManager
+				.createQuery("select fe from Feature fe where fe.featureNumber=:featureNumber")
 				.setParameter("featureNumber", featureID).getResultList();
 
 		entityManager.getTransaction().commit();
@@ -305,8 +447,8 @@ public class HomeManagedBean implements Serializable {
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
 		List<Account> tempList = new ArrayList<Account>();
-		tempList = entityManager.createQuery("Select ac from Account ac where ac.accountName=:accountName").setParameter("accountName", accountName)
-				.getResultList();
+		tempList = entityManager.createQuery("Select ac from Account ac where ac.accountName=:accountName")
+				.setParameter("accountName", accountName).getResultList();
 		for (Account account : tempList) {
 			StringBuilder builder = new StringBuilder();
 			for (Feature feature : account.getFeatures()) {
@@ -323,14 +465,13 @@ public class HomeManagedBean implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private List<DataSet> retriveSelectedData(String dataSetLocation) {
-
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
-		List<DataSet> tempList = entityManager.createQuery("select ds from DataSet ds where ds.dataSetLocation=:dataSetLocation")
+		List<DataSet> tempList = entityManager
+				.createQuery("select ds from DataSet ds where ds.dataSetLocation=:dataSetLocation")
 				.setParameter("dataSetLocation", dataSetLocation).getResultList();
 		entityManager.getTransaction().commit();
 		entityManager.close();
-
 		return tempList;
 
 	}
@@ -365,6 +506,13 @@ public class HomeManagedBean implements Serializable {
 		creation.setCreatedBy(loginManagedBean.getUserName());
 		creation.setUpdatedBy(loginManagedBean.getUserName());
 		creation.setCreationDate(new Date());
+		creation.setUpdationDate(new Date());
+		return creation;
+	}
+
+	private RecordCreation updateRecord() {
+		RecordCreation creation = new RecordCreation();
+		creation.setUpdatedBy(loginManagedBean.getUserName());
 		creation.setUpdationDate(new Date());
 		return creation;
 	}
@@ -571,7 +719,7 @@ public class HomeManagedBean implements Serializable {
 	/**
 	 * @return the defectaddingList
 	 */
-	public List<String> getDefectaddingList() {
+	public List<DefectBean> getDefectaddingList() {
 		return defectaddingList;
 	}
 
@@ -579,7 +727,7 @@ public class HomeManagedBean implements Serializable {
 	 * @param defectaddingList
 	 *            the defectaddingList to set
 	 */
-	public void setDefectaddingList(List<String> defectaddingList) {
+	public void setDefectaddingList(List<DefectBean> defectaddingList) {
 		this.defectaddingList = defectaddingList;
 	}
 
@@ -657,7 +805,5 @@ public class HomeManagedBean implements Serializable {
 	public void setPanelPermission(boolean panelPermission) {
 		this.panelPermission = panelPermission;
 	}
-
-	
 
 }
