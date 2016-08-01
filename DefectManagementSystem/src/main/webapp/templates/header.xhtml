@@ -4,18 +4,16 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:f="http://java.sun.com/jsf/core">
-
-
 	<center>
-		<h1 style="font-size: 3em; height: 20px;">Defect Analytics</h1>
+		<input type="text" value="Defect Analytics" class="header_style_font"/>
+
 	</center>
 	<h:form>
-	
 		<h:panelGroup rendered="#{loginManagedBean.userName ne null}">
-			<table style="width: 100%;">
+			<table class="table_style">
 				<tr>
 					<td><ul class="tab">
-							<li><a href="../pages/home.xhtml" class="tablinks">Home</a></li>
+							<li ><a href="../pages/home.xhtml" class="tablinks">Home</a></li>
 							<li><a href="../pages/featurespage.xhtml" class="tablinks">Features</a></li>
 							<li><a href="../pages/accountspage.xhtml" class="tablinks">Account</a></li>
 							<li><a href="../pages/datasetpage.xhtml" class="tablinks">Data

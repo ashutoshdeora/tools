@@ -18,6 +18,7 @@ import javax.persistence.Persistence;
 import org.primefaces.event.RowEditEvent;
 
 import com.ibm.utils.defmng.model.Account;
+import com.ibm.utils.defmng.model.AccountDataBean;
 import com.ibm.utils.defmng.model.DataSet;
 import com.ibm.utils.defmng.model.Defect;
 import com.ibm.utils.defmng.model.DefectBean;
@@ -38,13 +39,15 @@ public class HomeManagedBean implements Serializable {
 	private static final String DEACTIVEDATA = "dc";
 	private static final String FAILED ="Failed";
 	private static final String PASSEDWWA = "Passed with W/O";
+	private static final String MANAGER="manager";
+	private static final String TESTER="tester";
 
 	public HomeManagedBean() {
 
 	}
 
 	private static final String PERSISTENCE_UNIT_NAME = "dbpersistence";
-	List<TestExecution> testExecutionsList;
+	private List<TestExecution> testExecutionsList;
 	private List<Feature> featurDataListForDropDown;
 	private List<Account> accountsForDropDown;
 	private List<DataSet> dataSetsListForDropDown;
@@ -52,7 +55,8 @@ public class HomeManagedBean implements Serializable {
 	private List<DefectBean> defectaddingList;
 	private List<MasterData> listForFeatureTestExecutionResult;
 	private List<MasterData> listFeaturePhaseExecutionForDropDown;
-
+	private List<TestExecution> featureRunListWithHistory;
+	private List<AccountDataBean> accountDataBeans;
 	private String selectedfeature;
 	private String selectedAccount;
 	private String selectedDataSet;
@@ -64,6 +68,8 @@ public class HomeManagedBean implements Serializable {
 	private boolean showDefectGroup;
 	private boolean tablePermission;
 	private boolean panelPermission;
+	private boolean showHistoryData;
+	private boolean editPermission;
 
 	@ManagedProperty(value = "#{loginManagedBean}")
 	private LoginManagedBean loginManagedBean;
@@ -72,17 +78,22 @@ public class HomeManagedBean implements Serializable {
 	public void populateTestExecutionList() {
 		try {
 			if (loginManagedBean != null) {
-				if (loginManagedBean.getUserRole().equalsIgnoreCase("manager")) {
+				if (loginManagedBean.getUserRole().equalsIgnoreCase(MANAGER)) {
 					panelPermission = false;
 					tablePermission = true;
+					editPermission = true;
 					testExecutionsList = populateAllDataList();
-				} else if (loginManagedBean.getUserRole().equalsIgnoreCase("tester")) {
-					panelPermission = true;
-					tablePermission = true;
-					testExecutionsList = populateUserSpecificData();
-					retriveAllListForPage();
 					retriveMasterData();
 					retriveMasterDataForFeatureResult();
+					retriveAllListForPage();
+				} else if (loginManagedBean.getUserRole().equalsIgnoreCase(TESTER)) {
+					panelPermission = true;
+					tablePermission = true;
+					editPermission = false;
+					testExecutionsList = populateUserSpecificData();
+					retriveMasterData();
+					retriveMasterDataForFeatureResult();
+					retriveAllListForPage();
 					showDefectGroup = false;
 					defectaddingList = new ArrayList<DefectBean>();
 
@@ -108,6 +119,16 @@ public class HomeManagedBean implements Serializable {
 
 		System.out.println(accountsForDropDown.size());
 	}
+	
+	
+	public void onAccountSelect(){
+		AccountDataBean accountDataBean = new AccountDataBean();
+		accountDataBean.setAccountName(selectedAccount);
+		accountDataBeans.add(accountDataBean);
+		selectedAccount = new String();
+		
+		
+	}
 
 	public void onResultChange() {
 		if ((featurerunExecutionResult.equalsIgnoreCase(FAILED))
@@ -127,6 +148,8 @@ public class HomeManagedBean implements Serializable {
 		}
 		System.out.println(defectaddingList.size());
 	}
+	
+	
 
 	@SuppressWarnings("unchecked")
 	public void saveAllData() {
@@ -307,6 +330,29 @@ public class HomeManagedBean implements Serializable {
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
 
+	
+	
+	public void populateUserSpecificHistoryData(){
+		featureRunListWithHistory = new ArrayList<TestExecution>();
+		if(loginManagedBean.getUserRole().equalsIgnoreCase(MANAGER)){
+			featureRunListWithHistory = populateAllDataListWithHistory();
+		}else if (loginManagedBean.getUserRole().equalsIgnoreCase(TESTER)) {
+			featureRunListWithHistory = populateUserSpecificDataWithHistory();
+		}
+		showHistoryData = true;
+	}
+	
+	
+	
+	public void populateUserSpecificActiveData(){
+		testExecutionsList = new ArrayList<TestExecution>();
+		if(loginManagedBean.getUserRole().equalsIgnoreCase(MANAGER)){
+			testExecutionsList = populateAllDataList();
+		}else if (loginManagedBean.getUserRole().equalsIgnoreCase(TESTER)) {
+			testExecutionsList = populateUserSpecificData();
+		}
+		showHistoryData = false;
+	}
 	/**
 	 * 
 	 * @return entityManager
@@ -331,7 +377,6 @@ public class HomeManagedBean implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private List<TestExecution> populateAllDataListWithHistory() {
-
 		EntityManager entityManager = getEntitymanagerFromCurrent();
 		entityManager.getTransaction().begin();
 		List<TestExecution> tempExecutionlist = new ArrayList<TestExecution>();
@@ -804,6 +849,62 @@ public class HomeManagedBean implements Serializable {
 	 */
 	public void setPanelPermission(boolean panelPermission) {
 		this.panelPermission = panelPermission;
+	}
+
+	/**
+	 * @return the featureRunListWithHistory
+	 */
+	public List<TestExecution> getFeatureRunListWithHistory() {
+		return featureRunListWithHistory;
+	}
+
+	/**
+	 * @param featureRunListWithHistory the featureRunListWithHistory to set
+	 */
+	public void setFeatureRunListWithHistory(List<TestExecution> featureRunListWithHistory) {
+		this.featureRunListWithHistory = featureRunListWithHistory;
+	}
+
+	/**
+	 * @return the showHistoryData
+	 */
+	public boolean isShowHistoryData() {
+		return showHistoryData;
+	}
+
+	/**
+	 * @param showHistoryData the showHistoryData to set
+	 */
+	public void setShowHistoryData(boolean showHistoryData) {
+		this.showHistoryData = showHistoryData;
+	}
+
+	/**
+	 * @return the editPermission
+	 */
+	public boolean isEditPermission() {
+		return editPermission;
+	}
+
+	/**
+	 * @param editPermission the editPermission to set
+	 */
+	public void setEditPermission(boolean editPermission) {
+		this.editPermission = editPermission;
+	}
+
+	/**
+	 * @return the accountDataBeans
+	 */
+	public List<AccountDataBean> getAccountDataBeans() {
+		return accountDataBeans;
+	}
+
+	/**
+	 * @param accountDataBeans the accountDataBeans to set
+	 */
+	public void setAccountDataBeans(List<AccountDataBean> accountDataBeans) {
+		this.accountDataBeans = accountDataBeans;
 	}
 
 }

@@ -49,7 +49,7 @@
 	</context-param>
 	<context-param>
 		<param-name>primefaces.THEME</param-name>
-		<param-value>cruze</param-value>
+		<param-value>omega</param-value>
 	</context-param>
 	<filter>
 		<filter-name>PrimeFaces FileUpload Filter</filter-name>
