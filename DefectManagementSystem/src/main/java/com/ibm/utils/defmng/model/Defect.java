@@ -112,6 +112,11 @@ public class Defect implements Serializable {
 	private String testDay;	
 	@Column
 	private String transactionWeek;
+	
+	@Transient 
+	// have to be a column will be having style class mentioned 
+	// code to be written for for changing severity 
+	private String defectSeveraityColor;
 
 	/**
 	 * @return the id

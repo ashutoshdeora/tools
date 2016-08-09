@@ -29,6 +29,8 @@
 														autoWidth="false"
 														value="#{homeManagedBean.selectedfeature}"
 														style="width:100px">
+														<p:ajax listener="#{homeManagedBean.onFeatureChange}"
+															update="Account_dropD,dataSet_dropD" />
 														<f:selectItem itemLabel="Select Feature" itemValue=""
 															noSelectionOption="true" />
 														<f:selectItems
@@ -39,21 +41,17 @@
 											</tr>
 											<tr>
 												<td><p:outputLabel for="Account_dropD" value="Account " /></td>
-												<td><p:selectOneMenu id="Account_dropD" 
-														autoWidth="false"
-														value="#{homeManagedBean.selectedAccount}"
-														style="width:100px">
-														<f:selectItem itemLabel="Select Account" itemValue=""
-															noSelectionOption="true" />
+												<td><p:selectManyMenu id="Account_dropD"
+														value="#{homeManagedBean.accountDataBeans}">
 														<f:selectItems
 															value="#{homeManagedBean.accountsForDropDown}"
 															var="accItems" itemValue="#{accItems.accountName}"
 															itemLabel="#{accItems.accountName}" />
-													</p:selectOneMenu></td>
+													</p:selectManyMenu></td>
 											</tr>
+											
 										</table>
 									</td>
-
 									<td>
 										<table>
 											<tr>
@@ -138,15 +136,21 @@
 
 								</tr>
 								<tr>
-									<td colspan="4"><p:steps styleClass="custom"  
+									<td colspan="4"><p:steps styleClass="custom"
 											readonly="true">
-											<p:menuitem value="Start" url="#"  styleClass="steps_style"/>
-											<p:menuitem value="Select Feature" url="#" styleClass="steps_style"/>
-											<p:menuitem value="Select Account" url="#" styleClass="steps_style"/>
-											<p:menuitem value="Select Data Set" url="#" styleClass="steps_style"/>
-											<p:menuitem value="Select Feature Run Phase" url="#" styleClass="steps_style"/>
-											<p:menuitem value="Provide Comments" url="#" styleClass="steps_style"/>
-											<p:menuitem value="Select Run Status" url="#" styleClass="steps_style"/>
+											<p:menuitem value="Start" url="#" styleClass="steps_style" />
+											<p:menuitem value="Select Feature" url="#"
+												styleClass="steps_style" />
+											<p:menuitem value="Select Account" url="#"
+												styleClass="steps_style" />
+											<p:menuitem value="Select Data Set" url="#"
+												styleClass="steps_style" />
+											<p:menuitem value="Select Feature Run Phase" url="#"
+												styleClass="steps_style" />
+											<p:menuitem value="Provide Comments" url="#"
+												styleClass="steps_style" />
+											<p:menuitem value="Select Run Status" url="#"
+												styleClass="steps_style" />
 										</p:steps></td>
 								</tr>
 								<tr>
@@ -270,7 +274,7 @@
 											</f:facet>
 										</p:cellEditor>
 									</p:column>
-									<p:column headerText="Defects"	>
+									<p:column headerText="Defects">
 										<p:cellEditor>
 											<f:facet name="output">
 												<p:dataList value="#{list.defectslist}" var="defL"
@@ -344,7 +348,8 @@
 											</f:facet>
 										</p:cellEditor>
 									</p:column>
-									<p:column styleClass="cell_editor_style" rendered="#{homeManagedBean.editPermission}">
+									<p:column styleClass="cell_editor_style"
+										rendered="#{homeManagedBean.editPermission}">
 										<p:rowEditor />
 									</p:column>
 								</p:dataTable>

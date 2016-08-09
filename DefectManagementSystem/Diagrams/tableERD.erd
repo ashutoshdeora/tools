@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram version="1" name="tableERD.erd" time="201608091317">
+	<entities>
+		<data-source id="oracle_thin-1565ee13c44-67166959691e7f29">
+			<entity id="1" name="ACCOUNTMASTER" fq-name="PROJECTUSER.ACCOUNTMASTER" x="60" y="33">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="2" name="ACCOUNTRUN" fq-name="PROJECTUSER.ACCOUNTRUN" x="396" y="74">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="3" name="DATASETACCOUNT" fq-name="PROJECTUSER.DATASETACCOUNT" x="314" y="257">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="4" name="DATASETACCOUNTHISTORY" fq-name="PROJECTUSER.DATASETACCOUNTHISTORY" x="42" y="305">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="5" name="DATASETFEATURE" fq-name="PROJECTUSER.DATASETFEATURE" x="761" y="713">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="6" name="DATASETFEATUREHISTORY" fq-name="PROJECTUSER.DATASETFEATUREHISTORY" x="54" y="795">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="7" name="DATASETHISTORY" fq-name="PROJECTUSER.DATASETHISTORY" x="64" y="555">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="8" name="DATASETMASTER" fq-name="PROJECTUSER.DATASETMASTER" x="582" y="478">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="9" name="DATASETRUN" fq-name="PROJECTUSER.DATASETRUN" x="683" y="158">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="10" name="DATASETRUNDEFECT" fq-name="PROJECTUSER.DATASETRUNDEFECT" x="975" y="425">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="11" name="FEATUREMASTER" fq-name="PROJECTUSER.FEATUREMASTER" x="464" y="801">
+				<path name="PROJECTUSER"/>
+			</entity>
+			<entity id="12" name="FEATURERUN" fq-name="PROJECTUSER.FEATURERUN" x="950" y="860">
+				<path name="PROJECTUSER"/>
+			</entity>
+		</data-source>
+	</entities>
+	<relations>
+		<relation name="ACCOUNTRUN_FK1" fq-name="PROJECTUSER.ACCOUNTRUN.ACCOUNTRUN_FK1" type="fk" pk-ref="2" fk-ref="9"/>
+		<relation name="ACCOUNTRUN_FK2" fq-name="PROJECTUSER.ACCOUNTRUN.ACCOUNTRUN_FK2" type="fk" pk-ref="2" fk-ref="1"/>
+		<relation name="ACCOUNT_FK1" fq-name="PROJECTUSER.DATASETACCOUNT.ACCOUNT_FK1" type="fk" pk-ref="3" fk-ref="1"/>
+		<relation name="ACCOUNT_FK2" fq-name="PROJECTUSER.DATASETACCOUNT.ACCOUNT_FK2" type="fk" pk-ref="3" fk-ref="8"/>
+		<relation name="ACCOUNTHISTORY_FK1" fq-name="PROJECTUSER.DATASETACCOUNTHISTORY.ACCOUNTHISTORY_FK1" type="fk" pk-ref="4" fk-ref="8"/>
+		<relation name="ACCOUNTHISTORY_FK2" fq-name="PROJECTUSER.DATASETACCOUNTHISTORY.ACCOUNTHISTORY_FK2" type="fk" pk-ref="4" fk-ref="1"/>
+		<relation name="FEATURE_FK1" fq-name="PROJECTUSER.DATASETFEATURE.FEATURE_FK1" type="fk" pk-ref="5" fk-ref="8"/>
+		<relation name="FEATURE_FK2" fq-name="PROJECTUSER.DATASETFEATURE.FEATURE_FK2" type="fk" pk-ref="5" fk-ref="11"/>
+		<relation name="FEATUREHISTORY_FK1" fq-name="PROJECTUSER.DATASETFEATUREHISTORY.FEATUREHISTORY_FK1" type="fk" pk-ref="6" fk-ref="8"/>
+		<relation name="FEATUREHISTORY_FK2" fq-name="PROJECTUSER.DATASETFEATUREHISTORY.FEATUREHISTORY_FK2" type="fk" pk-ref="6" fk-ref="11"/>
+		<relation name="DATASETHISTORY_FK2" fq-name="PROJECTUSER.DATASETHISTORY.DATASETHISTORY_FK2" type="fk" pk-ref="7" fk-ref="8"/>
+		<relation name="DATASETRUN_FK1" fq-name="PROJECTUSER.DATASETRUN.DATASETRUN_FK1" type="fk" pk-ref="9" fk-ref="8"/>
+		<relation name="DATASETRUNDEFECT_FK1" fq-name="PROJECTUSER.DATASETRUNDEFECT.DATASETRUNDEFECT_FK1" type="fk" pk-ref="10" fk-ref="12"/>
+		<relation name="DATASETRUNDEFECT_FK2" fq-name="PROJECTUSER.DATASETRUNDEFECT.DATASETRUNDEFECT_FK2" type="fk" pk-ref="10" fk-ref="9"/>
+		<relation name="FEATURERUN_FK1" fq-name="PROJECTUSER.FEATURERUN.FEATURERUN_FK1" type="fk" pk-ref="12" fk-ref="9"/>
+		<relation name="FEATURERUN_FK2" fq-name="PROJECTUSER.FEATURERUN.FEATURERUN_FK2" type="fk" pk-ref="12" fk-ref="11"/>
+	</relations>
+	<notes/>
+</diagram>

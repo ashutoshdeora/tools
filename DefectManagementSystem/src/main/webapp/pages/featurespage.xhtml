@@ -11,125 +11,207 @@
 
 
 		<h:form>
-			<div>
-				<p:dataTable id="feat_datatable" widgetVar="featTable"
-					value="#{featureDataManagedBean.featurDataList}" var="fea"
-					rows="10" paginator="true" rowIndexVar="rowIndex"
-					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-					rowsPerPageTemplate="10,20,50" scrollable="true" scrollWidth="100%"
-					tableStyleClass="datatable_styles" rowStyleClass="column_style">
-					<f:facet name="header">
-						<h:outputText value="Feature Details" />
-						<div style="float: right">
-							<p:commandLink id="xls" ajax="false">
-								<p:graphicImage value="/resources/images/excel.png" />
-								<pe:exporter type="xlsx" target="feat_datatable"
-									fileName="fetureDetailsResult" />
-							</p:commandLink>
-						</div>
-					</f:facet>
+			<table>
+				<tr>
+					<td>
+						<table style="width: 30%">
+							<tr>
+								<td><p:panel id="fet_acc_asso"
+										header="Associate Feature Account">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Account Name" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaAcc" value="Associate"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
+									</p:panel></td>
+								<td><p:panel id="fet_acc_rem"
+										header="Remove Feature Account Association">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Account Name" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaAcc_rem" value="Remove"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
+									</p:panel></td>
+							</tr>
+							<tr>
+								<td><p:panel id="fet_ds_asso"
+										header="Associate Feature DataSet">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Data Set" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaDs" value="Associate"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
+									</p:panel></td>
+								<td><p:panel id="fet_ds_rem"
+										header="Remove Feature DataSet Association">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Data Set" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaDs_rem" value="Remove"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
+									</p:panel></td>
+							</tr>
+							<tr>
+								<td><p:panel id="fet_def_asso"
+										header="Associate Feature Defect">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Defect" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaDef" value="Associate"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
+									</p:panel></td>
+								<td><p:panel id="fet_def_rem"
+										header="Remove Feature Defect Association">
+										<h:panelGrid columns="2">
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Feature Id:" />
+											<h:outputLabel value="Defect" />
+											<h:outputLabel value="Account Name" />
+											<p:commandButton id="sub_feaDef_rem" value="Remove"
+												type="submit" ajax="true" update="feat_datatable" />
+										</h:panelGrid>
 
-					<p:column headerText="Feature Number" width="200">
-						<h:outputText value="#{fea.featureNumber}" />
+									</p:panel></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td><p:dataTable id="feat_datatable" widgetVar="featTable"
+							value="#{featureDataManagedBean.featurDataList}" var="fea"
+							rows="10" paginator="true" rowIndexVar="rowIndex"
+							paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,20,50" scrollable="true"
+							scrollWidth="100%" tableStyleClass="datatable_styles"
+							rowStyleClass="column_style">
+							<f:facet name="header">
+								<h:outputText value="Feature Details" />
+								<div style="float: right">
+									<p:commandLink id="xls" ajax="false">
+										<p:graphicImage value="/resources/images/excel.png" />
+										<pe:exporter type="xlsx" target="feat_datatable"
+											fileName="fetureDetailsResult" />
+									</p:commandLink>
+								</div>
+							</f:facet>
 
-						<h:panelGroup>
-							<p:steps activeIndex="2" styleClass="custom" readonly="false">
-								<p:menuitem value="Created" url="#" />
-								<p:menuitem value="Waiting to be Test" url="#" />
-								<p:menuitem value="Tested" url="#" />
-								<p:menuitem value="Integerated" url="#" />
-							</p:steps>
-						</h:panelGroup>
-						<div>
-							<h:panelGroup layout="block">
-								<h:outputText id="output"
-									value="#{featureDataManagedBean.number2}% " />
-								<h:inputHidden id="txt2"
-									value="#{featureDataManagedBean.number2}" />
-								<p:slider for="txt2" display="output" disabled="true" />
-							</h:panelGroup>
-						</div>
-					</p:column>
-					<p:column headerText="Grouping" width="100">
-						<h:outputText value="#{fea.featureGrouping}" />
-					</p:column>
-					<p:column headerText="Test Script" width="200">
-						<h:outputText value="#{fea.featureTestScriptName}" />
-					</p:column>
-					<p:column headerText="Comments" width="200">
-						<h:outputText value="#{fea.featureTestScriptComments}" />
-					</p:column>
-					<p:column headerText="Phase" width="100">
-						<h:outputText value="#{fea.featureTestExecutionPhase}" />
-					</p:column>
-					<p:column headerText="Owner" width="100">
-						<h:outputText value="#{fea.featureOwner}" />
-					</p:column>
-					<p:column headerText="Data Set Cat" width="100">
-						<h:outputText value="#{fea.featureDataSetCatagoery}" />
-					</p:column>
+							<p:column headerText="Feature Number" width="200">
+								<h:outputText value="#{fea.featureNumber}" />
 
-
-					<p:column headerText="Roll Out" width="100">
-
-						<h:outputText value="#{fea.featureRollOut}" />
-					</p:column>
-					<p:column headerText="Status" width="100">
-						<h:outputText value="#{fea.featureStatus}" />
-					</p:column>
-					<p:column headerText="Execution" width="100">
-						<h:outputText value="#{fea.featureTestExecution}" />
-					</p:column>
-					<p:column headerText="Account Details" width="200">
-
-						<p:dataList value="#{fea.accounts}" var="acc" rowIndexVar="rowInd"
-							style="margin-left:-20px;" itemStyleClass="list_style"
-							styleClass="plik_style content_style">
-
-							<p:link outcome="/pages/accountspage.xhtml"
-								value="#{rowInd+1}.) #{acc.accountName}"
-								styleClass="anchor_style">
-								<f:param name="selectedAccountId" value="#{acc.accountName}" />
-							</p:link>
-						</p:dataList>
-
-					</p:column>
-					<p:column headerText="Data Set" width="200">
-						<p:dataList id="dlist_feature" value="#{fea.dataSets}" var="dts"
-							itemStyleClass="list_style" styleClass="plik_style content_style"
-							rowIndexVar="rowInd">
-
-							<p:link outcome="/pages/datasetpage.xhtml"
-								value="#{rowInd+1}.) #{dts.dataSetLocation}"
-								styleClass="anchor_style">
-								<f:param name="selectedDataSetLocation"
-									value="#{dts.dataSetLocation}" />
-							</p:link>
-
-						</p:dataList>
-					</p:column>
-
-					<p:column headerText="Defects" width="100" style="padding:0;">
-
-						<p:dataTable value="#{fea.defectsList}" var="defL" width="100%">
-							<p:column style="color:red;">
-								<p:link outcome="/pages/defectspage.xhtml"
-									value="#{defL.hpqcDefectID}" styleClass="anchor_style">
-									<f:param name="selectedDefect" value="#{defL.hpqcDefectID}" />
-								</p:link>
+								<h:panelGroup>
+									<p:steps activeIndex="2" styleClass="custom" readonly="false">
+										<p:menuitem value="Created" url="#" />
+										<p:menuitem value="Waiting to be Test" url="#" />
+										<p:menuitem value="Tested" url="#" />
+										<p:menuitem value="Integerated" url="#" />
+									</p:steps>
+								</h:panelGroup>
+								<div>
+									<h:panelGroup layout="block">
+										<h:outputText id="output"
+											value="#{featureDataManagedBean.number2}% " />
+										<h:inputHidden id="txt2"
+											value="#{featureDataManagedBean.number2}" />
+										<p:slider for="txt2" display="output" disabled="true" />
+									</h:panelGroup>
+								</div>
 							</p:column>
-						</p:dataTable>
-						
-					</p:column>
-					<p:column headerText="BA" width="100">
-						<h:outputText value="#{fea.ba}" />
-					</p:column>
-					<p:column headerText="Owner" width="100">
-						<h:outputText value="#{fea.owner}" />
-					</p:column>
-				</p:dataTable>
+							<p:column headerText="Grouping" width="100">
+								<h:outputText value="#{fea.featureGrouping}" />
+							</p:column>
+							<p:column headerText="Test Script" width="200">
+								<h:outputText value="#{fea.featureTestScriptName}" />
+							</p:column>
+							<p:column headerText="Comments" width="200">
+								<h:outputText value="#{fea.featureTestScriptComments}" />
+							</p:column>
+							<p:column headerText="Phase" width="100">
+								<h:outputText value="#{fea.featureTestExecutionPhase}" />
+							</p:column>
+							<p:column headerText="Owner" width="100">
+								<h:outputText value="#{fea.featureOwner}" />
+							</p:column>
+							<p:column headerText="Data Set Cat" width="100">
+								<h:outputText value="#{fea.featureDataSetCatagoery}" />
+							</p:column>
 
-			</div>
+
+							<p:column headerText="Roll Out" width="100">
+
+								<h:outputText value="#{fea.featureRollOut}" />
+							</p:column>
+							<p:column headerText="Status" width="100">
+								<h:outputText value="#{fea.featureStatus}" />
+							</p:column>
+							<p:column headerText="Execution" width="100">
+								<h:outputText value="#{fea.featureTestExecution}" />
+							</p:column>
+							<p:column headerText="Account Details" width="200">
+
+								<p:dataList value="#{fea.accounts}" var="acc"
+									rowIndexVar="rowInd" style="margin-left:-20px;"
+									itemStyleClass="list_style"
+									styleClass="plik_style content_style">
+
+									<p:link outcome="/pages/accountspage.xhtml"
+										value="#{rowInd+1}.) #{acc.accountName}"
+										styleClass="anchor_style">
+										<f:param name="selectedAccountId" value="#{acc.accountName}" />
+									</p:link>
+								</p:dataList>
+
+							</p:column>
+							<p:column headerText="Data Set" width="200">
+								<p:dataList id="dlist_feature" value="#{fea.dataSets}" var="dts"
+									itemStyleClass="list_style"
+									styleClass="plik_style content_style" rowIndexVar="rowInd">
+
+									<p:link outcome="/pages/datasetpage.xhtml"
+										value="#{rowInd+1}.) #{dts.dataSetLocation}"
+										styleClass="anchor_style">
+										<f:param name="selectedDataSetLocation"
+											value="#{dts.dataSetLocation}" />
+									</p:link>
+
+								</p:dataList>
+							</p:column>
+
+							<p:column headerText="Defects" width="100" style="padding:0;">
+
+								<p:dataTable value="#{fea.defectsList}" var="defL" width="100%">
+									<p:column style="color:red;">
+										<p:link outcome="/pages/defectspage.xhtml"
+											value="#{defL.hpqcDefectID}" styleClass="anchor_style">
+											<f:param name="selectedDefect" value="#{defL.hpqcDefectID}" />
+										</p:link>
+									</p:column>
+								</p:dataTable>
+
+							</p:column>
+							<p:column headerText="BA" width="100">
+								<h:outputText value="#{fea.ba}" />
+							</p:column>
+							<p:column headerText="Owner" width="100">
+								<h:outputText value="#{fea.owner}" />
+							</p:column>
+						</p:dataTable></td>
+				</tr>
+			</table>
 		</h:form>
 	</ui:define>
 </ui:composition>

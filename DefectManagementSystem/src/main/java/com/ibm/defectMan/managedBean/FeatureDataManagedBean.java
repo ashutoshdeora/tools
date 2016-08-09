@@ -18,6 +18,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.google.gson.Gson;
+import com.ibm.utils.defmng.model.Account;
+import com.ibm.utils.defmng.model.DataSet;
+import com.ibm.utils.defmng.model.Defect;
 import com.ibm.utils.defmng.model.Feature;
 
 /**
@@ -38,6 +41,9 @@ public class FeatureDataManagedBean implements Serializable {
 	private int number2 = 0;
 	private int number3 = 60;
 	private String[] rolloutOption;
+	private List<Account> accountsForDropDown;
+	private List<DataSet> dataSetsListForDropDown;
+	private List<Defect> defectsListForDropDown ;
 
 	public FeatureDataManagedBean() {
 
@@ -71,6 +77,12 @@ public class FeatureDataManagedBean implements Serializable {
 				} else {
 					retriveFeatureListFromDB();
 				}
+				accountsForDropDown = new ArrayList<Account>();
+				accountsForDropDown = retriveAllAccountListFromDB();
+				dataSetsListForDropDown = new ArrayList<DataSet>();
+				dataSetsListForDropDown = retriveAllDataSetListFromDB();
+				defectsListForDropDown = new ArrayList<Defect>();
+				defectsListForDropDown = retriveAllDefects();
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -112,6 +124,53 @@ public class FeatureDataManagedBean implements Serializable {
 		entityManager.close();
 
 		return featurDataList;
+
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<Account> retriveAllAccountListFromDB() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+		List<Account> tempList = new ArrayList<Account>();
+		tempList = entityManager.createQuery("Select ac from Account ac ").getResultList();
+		for (Account account : tempList) {
+			StringBuilder builder = new StringBuilder();
+			for (Feature feature : account.getFeatures()) {
+				builder.append(feature.getFeatureNumber());
+			}
+			System.out.println(builder.toString());
+		}
+
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return tempList;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<DataSet> retriveAllDataSetListFromDB() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+		List<DataSet> tempList = entityManager.createQuery("select ds from DataSet ds").getResultList();
+		entityManager.getTransaction().commit();
+		entityManager.close();
+
+		return tempList;
+	}
+	
+	
+	private List<Defect> retriveAllDefects() {
+
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+
+		List<Defect> tempList = new ArrayList<Defect>();
+		tempList = entityManager.createQuery("select df from Defect df").getResultList();
+
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return tempList;
 
 	}
 
@@ -177,6 +236,48 @@ public class FeatureDataManagedBean implements Serializable {
 	 */
 	public void setNumber3(int number3) {
 		this.number3 = number3;
+	}
+
+	/**
+	 * @return the accountsForDropDown
+	 */
+	public List<Account> getAccountsForDropDown() {
+		return accountsForDropDown;
+	}
+
+	/**
+	 * @param accountsForDropDown the accountsForDropDown to set
+	 */
+	public void setAccountsForDropDown(List<Account> accountsForDropDown) {
+		this.accountsForDropDown = accountsForDropDown;
+	}
+
+	/**
+	 * @return the dataSetsListForDropDown
+	 */
+	public List<DataSet> getDataSetsListForDropDown() {
+		return dataSetsListForDropDown;
+	}
+
+	/**
+	 * @param dataSetsListForDropDown the dataSetsListForDropDown to set
+	 */
+	public void setDataSetsListForDropDown(List<DataSet> dataSetsListForDropDown) {
+		this.dataSetsListForDropDown = dataSetsListForDropDown;
+	}
+
+	/**
+	 * @return the defectsListForDropDown
+	 */
+	public List<Defect> getDefectsListForDropDown() {
+		return defectsListForDropDown;
+	}
+
+	/**
+	 * @param defectsListForDropDown the defectsListForDropDown to set
+	 */
+	public void setDefectsListForDropDown(List<Defect> defectsListForDropDown) {
+		this.defectsListForDropDown = defectsListForDropDown;
 	}
 
 }

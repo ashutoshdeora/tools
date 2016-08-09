@@ -96,6 +96,7 @@ public class HomeManagedBean implements Serializable {
 					retriveAllListForPage();
 					showDefectGroup = false;
 					defectaddingList = new ArrayList<DefectBean>();
+					accountDataBeans = new ArrayList<AccountDataBean>();
 
 				}
 
@@ -163,9 +164,9 @@ public class HomeManagedBean implements Serializable {
 				break;
 			}
 		}
-
+		// change of code for one to many relation for account to feature run
 		for (Account account : accountsForDropDown) {
-			if (account.getAccountName().equalsIgnoreCase(selectedAccount)) {
+			if (account.getAccountName().equalsIgnoreCase(accountDataBeans.get(0).getAccountName())) {
 				accountRun = account;
 				break;
 			}
@@ -419,10 +420,7 @@ public class HomeManagedBean implements Serializable {
 	private void retriveAllListForPage() {
 		featurDataListForDropDown = new ArrayList<Feature>();
 		featurDataListForDropDown = retriveFeatureListFromDB();
-		accountsForDropDown = new ArrayList<Account>();
-		accountsForDropDown = retriveAllAccountListFromDB();
-		dataSetsListForDropDown = new ArrayList<DataSet>();
-		dataSetsListForDropDown = retriveAllDataSetListFromDB();
+		
 
 	}
 
