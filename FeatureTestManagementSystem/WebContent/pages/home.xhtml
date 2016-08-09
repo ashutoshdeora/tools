@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/templates/template.xhtml"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	<ui:define name="metadata">
+	</ui:define>
+	<ui:define name="content">
+
+
+		<h:form id="ds_runForm">
+			<p:growl id="msgs" showDetail="true" />
+			<table id="ovr_tbl"
+				style="width: 100%; border-spacing: 0; border: 1px solid">
+				<tr>
+					<td><p:panel id="ds_run_panel"
+							header="Select a Data Set for Run" style="margin-bottom:10px;">
+
+							<table id="pnl_tbl"
+								style="width: 100%; border-spacing: 0; border: 1px solid">
+								<tr style="vertical-align: top">
+									<td width="20%">
+										<table id="row_tbl"
+											style="border-spacing: 0; border: 1px solid">
+											<tr>
+												<td><p:outputLabel for="dataSet_dropD"
+														value="Data Set " /></td>
+												<td><p:selectOneMenu id="dataSet_dropD"
+														autoWidth="false"
+														value="#{dataSetRunManageBean.selectedDataSet}"
+														style="width:150px;">
+														<p:ajax listener="#{dataSetRunManageBean.onDataSetChange}"
+															update="acc_tbl,fea_tabl" />
+														<f:selectItem itemLabel="Select Data Set" itemValue=""
+															noSelectionOption="true" />
+														<f:selectItems
+															value="#{dataSetRunManageBean.datasetmastersList}"
+															var="dsItems" itemValue="#{dsItems.datasetid}"
+															itemLabel="#{dsItems.datasetname}" />
+													</p:selectOneMenu></td>
+											</tr>
+											<tr>
+												<td><p:outputLabel for="acc_tbl" value="Account" /></td>
+												<td><p:dataTable id="acc_tbl" scrollHeight="100"
+														scrollable="true"
+														value="#{dataSetRunManageBean.accountmastersList}"
+														var="accn">
+														<p:column headerText="Account Name">
+															<h:outputText value="#{accn.accountname}" />
+														</p:column>
+													</p:dataTable></td>
+											</tr>
+										</table>
+									</td>
+									<td>
+										<table style="border-spacing: 0; border: 1px solid;">
+											<tr>
+												<td><p:dataTable id="fea_tabl" scrollHeight="150"
+														scrollable="true"
+														value="#{dataSetRunManageBean.featuremastersList}"
+														var="fea">
+														<p:column headerText="Feature Set ID">
+															<h:outputText value="#{fea.featureset}" />
+														</p:column>
+														<p:column headerText="Execution Phase">
+															<h:outputText value="#{fea.featuretestexecutionphase}" />
+														</p:column>
+														<p:column headerText="Status">
+															<h:outputText value="#{fea.featurestatus}" />
+														</p:column>
+														<p:column headerText="Defects">
+															<p:dataTable value="#{fea.defectId}" var="defL">
+																<p:column>
+																	<h:outputText value="#{defL}" />
+																</p:column>
+
+															</p:dataTable>
+														</p:column>
+														<p:column>
+															<p:commandButton value="Add Defect"
+																actionListener="#{dataSetRunManageBean.addDefects}"
+																type="button" oncomplete="PF('dlg2').show();">
+																<f:setPropertyActionListener value="#{fea}"
+																	target="#{dataSetRunManageBean.selecetdFeature}" />
+																	</p:commandButton>
+														</p:column>
+
+
+													</p:dataTable></td>
+											</tr>
+										</table>
+
+									</td>
+									<td width="25%">
+										<table>
+											<tr>
+												<td><h:outputLabel value="Comments for Run"
+														for="commentsText" /></td>
+												<td><p:inputTextarea id="commentsText"
+														value="#{dataSetRunManageBean.testScriptComments}"
+														rows="5" cols="30" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="Select Data Phase"
+														for="dataSetPh_dropD" /></td>
+												<td><p:selectOneMenu id="dataSetPh_dropD"
+														autoWidth="false"
+														value="#{dataSetRunManageBean.selectedDataSetphase}"
+														style="width:150px;">
+
+														<f:selectItem itemLabel="Select Data Set" itemValue=""
+															noSelectionOption="true" />
+														<f:selectItems
+															value="#{dataSetRunManageBean.masterDatasDropDown}"
+															var="dsItems" itemValue="#{dsItems.catdata}"
+															itemLabel="#{dsItems.catdata}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</td>
+
+								</tr>
+								<tr>
+									<td colspan="3"><p:commandButton
+											value="Submit Data Set Run"
+											actionListener="#{dataSetRunManageBean.saveDataSetRun}"></p:commandButton>
+									</td>
+								</tr>
+							</table>
+						</p:panel></td>
+				</tr>
+				<tr>
+					<td><h:panelGroup>
+							<p:dataTable value="#{dataSetRunManageBean.datasetRunsList}"
+								var="dsr">
+								<p:subTable value="#{dsr.featureruns}" var="fsr">
+									<p:column>
+										<h:outputText value="#{fsr.featuremaster.featureid}" />
+									</p:column>
+								</p:subTable>
+							</p:dataTable>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<p:dialog header="Modal Dialog" widgetVar="dlg2" modal="true"
+			dynamic="true" height="100">
+			<h:outputText value="This is a Modal Dialog." />
+		</p:dialog>
+	</ui:define>
+</ui:composition>
