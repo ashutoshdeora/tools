@@ -11,19 +11,16 @@
 
 
 		<h:form id="ds_runForm">
-			<p:growl id="msgs" showDetail="true" />
-			<table id="ovr_tbl"
-				style="width: 100%; border-spacing: 0; border: 1px solid">
+			<p:growl id="msgs" showDetail="true" autoUpdate="true" showSummary="false"/>
+			<table id="ovr_tbl" style="width: 100%; border-spacing: 0;">
 				<tr>
 					<td><p:panel id="ds_run_panel"
 							header="Select a Data Set for Run" style="margin-bottom:10px;">
 
-							<table id="pnl_tbl"
-								style="width: 100%; border-spacing: 0; border: 1px solid">
+							<table id="pnl_tbl" style="width: 100%; border-spacing: 0;">
 								<tr style="vertical-align: top">
-									<td width="20%">
-										<table id="row_tbl"
-											style="border-spacing: 0; border: 1px solid">
+									<td width="25%">
+										<table id="row_tbl" style="border-spacing: 0;">
 											<tr>
 												<td><p:outputLabel for="dataSet_dropD"
 														value="Data Set " /></td>
@@ -42,9 +39,9 @@
 													</p:selectOneMenu></td>
 											</tr>
 											<tr>
-												<td><p:outputLabel for="acc_tbl" value="Account" /></td>
-												<td><p:dataTable id="acc_tbl" scrollHeight="100"
-														scrollable="true"
+
+												<td colspan="2"><p:dataTable id="acc_tbl"
+														scrollHeight="100" scrollable="true"
 														value="#{dataSetRunManageBean.accountmastersList}"
 														var="accn">
 														<p:column headerText="Account Name">
@@ -55,36 +52,42 @@
 										</table>
 									</td>
 									<td>
-										<table style="border-spacing: 0; border: 1px solid;">
+										<table style="border-spacing: 0;">
+											<tr>
+												<td></td>
+											</tr>
 											<tr>
 												<td><p:dataTable id="fea_tabl" scrollHeight="150"
 														scrollable="true"
-														value="#{dataSetRunManageBean.featuremastersList}"
+														value="#{dataSetRunManageBean.featureRunModelBeansList}"
 														var="fea">
 														<p:column headerText="Feature Set ID">
-															<h:outputText value="#{fea.featureset}" />
+															<h:outputText value="#{fea.featureSetId}" />
+														</p:column>
+														<p:column headerText="Feature Test Phase">
+															<h:outputText value="#{fea.featureTestPhase}" />
 														</p:column>
 														<p:column headerText="Execution Phase">
-															<h:outputText value="#{fea.featuretestexecutionphase}" />
+															<h:outputText value="#{fea.featureRunPhase}" />
 														</p:column>
 														<p:column headerText="Status">
-															<h:outputText value="#{fea.featurestatus}" />
+															<h:outputText value="#{fea.featureRunResult}" />
 														</p:column>
 														<p:column headerText="Defects">
-															<p:dataTable value="#{fea.defectId}" var="defL">
+															<p:dataTable value="#{fea.defectBeansList}" var="defL">
 																<p:column>
-																	<h:outputText value="#{defL}" />
+																	<h:outputText value="#{defL.HPQCID}" />
 																</p:column>
 
 															</p:dataTable>
 														</p:column>
 														<p:column>
-															<p:commandButton value="Add Defect"
-																actionListener="#{dataSetRunManageBean.addDefects}"
-																type="button" oncomplete="PF('dlg2').show();">
-																<f:setPropertyActionListener value="#{fea}"
-																	target="#{dataSetRunManageBean.selecetdFeature}" />
-																	</p:commandButton>
+															<p:commandButton id="addef_btn" value="Add Defect"
+																update="ds_runForm:feaDef_pnlg"
+																actionListener="#{dataSetRunManageBean.addFeatureDefects}"
+																type="submit">
+																<f:attribute name="feature" value="#{fea}" />
+															</p:commandButton>
 														</p:column>
 
 
@@ -93,7 +96,7 @@
 										</table>
 
 									</td>
-									<td width="25%">
+									<td width="30%">
 										<table>
 											<tr>
 												<td><h:outputLabel value="Comments for Run"
@@ -113,7 +116,7 @@
 														<f:selectItem itemLabel="Select Data Set" itemValue=""
 															noSelectionOption="true" />
 														<f:selectItems
-															value="#{dataSetRunManageBean.masterDatasDropDown}"
+															value="#{dataSetRunManageBean.datasetPhaseDropDown}"
 															var="dsItems" itemValue="#{dsItems.catdata}"
 															itemLabel="#{dsItems.catdata}" />
 													</p:selectOneMenu></td>
@@ -132,6 +135,81 @@
 						</p:panel></td>
 				</tr>
 				<tr>
+					<td><h:panelGroup id="feaDef_pnlg">
+							<p:panel
+								rendered="#{dataSetRunManageBean.showfeatureDefectPanel}"
+								header="Feature ID: #{dataSetRunManageBean.selectedFeatureID}">
+								<table>
+									<tr style="vertical-align: top">
+
+										<td><p:outputLabel for="fet_ph_run"
+												value="Feature run Phase :" /></td>
+										<td><p:selectOneMenu id="fet_ph_run" autoWidth="false"
+												value="#{dataSetRunManageBean.selectedFeaturePhase}"
+												style="width:100px">
+												<f:selectItem itemLabel="Select Feature Phase" itemValue=""
+													noSelectionOption="true" />
+												<f:selectItems
+													value="#{dataSetRunManageBean.featurePhaseDropDown}"
+													var="fpItems" itemValue="#{fpItems.catdata}"
+													itemLabel="#{fpItems.catdata}" />
+											</p:selectOneMenu></td>
+
+										<td><h:outputLabel value="Run Status" for="testRes_dropD" /></td>
+										<td><p:selectOneMenu id="testRes_dropD" autoWidth="false"
+												value="#{dataSetRunManageBean.selectedTestPhase}"
+												style="width:100px">
+
+												<f:selectItem itemLabel="Select Result" itemValue=""
+													noSelectionOption="true" />
+												<f:selectItems
+													value="#{dataSetRunManageBean.testPhaseDropDown}"
+													var="lsItems" itemValue="#{lsItems.catdata}"
+													itemLabel="#{lsItems.catdata}" />
+											</p:selectOneMenu></td>
+
+										<td><h:outputLabel value="Run Status" for="feaRes_dropD" /></td>
+										<td><p:selectOneMenu id="feaRes_dropD" autoWidth="false"
+												value="#{dataSetRunManageBean.selectedFeatureResult}"
+												style="width:100px">
+												<p:ajax listener="#{dataSetRunManageBean.onResultChange}"
+													event="change" update="def_grp" />
+												<f:selectItem itemLabel="Select Result" itemValue=""
+													noSelectionOption="true" />
+												<f:selectItems
+													value="#{dataSetRunManageBean.featureStatusDropDown}"
+													var="lsItems" itemValue="#{lsItems.catdata}"
+													itemLabel="#{lsItems.catdata}" />
+											</p:selectOneMenu></td>
+										<td><h:panelGroup id="def_grp">
+												<p:commandButton value="Add Defects"
+													action="#{dataSetRunManageBean.addMoreDefects}"
+													update="new-def_grp new_table"
+													disabled="#{!(dataSetRunManageBean.showDefectGroup)}"
+													type="submit" />
+											</h:panelGroup></td>
+										<td><h:panelGroup id="new-def_grp">
+												<h:dataTable id="new_table" var="def"
+													value="#{dataSetRunManageBean.defectaddingList}">
+													<h:column>
+														<h:outputLabel value="Defect ID: " />
+														<h:inputText value="#{def.HPQCID}" />
+													</h:column>
+												</h:dataTable>
+
+											</h:panelGroup></td>
+									</tr>
+									<tr>
+										<td colspan="3"><p:commandButton
+												value="Save Feature Data"
+												actionListener="#{dataSetRunManageBean.saveFeatureData}"
+												type="submit" update="fea_tabl,feaDef_pnlg"></p:commandButton></td>
+									</tr>
+								</table>
+							</p:panel>
+						</h:panelGroup></td>
+				</tr>
+				<tr>
 					<td><h:panelGroup>
 							<p:dataTable value="#{dataSetRunManageBean.datasetRunsList}"
 								var="dsr">
@@ -145,9 +223,6 @@
 				</tr>
 			</table>
 		</h:form>
-		<p:dialog header="Modal Dialog" widgetVar="dlg2" modal="true"
-			dynamic="true" height="100">
-			<h:outputText value="This is a Modal Dialog." />
-		</p:dialog>
+
 	</ui:define>
 </ui:composition>

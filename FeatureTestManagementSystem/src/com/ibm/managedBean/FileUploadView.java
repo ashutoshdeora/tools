@@ -96,8 +96,8 @@ public class FileUploadView implements Serializable {
 			dataFromExcel = new ArrayList<String[]>();
 			dataFromExcel = readSheet(file.getInputstream(), sheetNumberToRead);
 			populateCustomerDataList(dataFromExcel);
-			insertDataSet(dataSets);
-			insertCustomerDataAndRelation(accountMasters);
+		//	insertDataSet(dataSets);
+		//	insertCustomerDataAndRelation(accountMasters);
 			insertfeatureData(featureMasters);
 
 		} catch (Exception exception) {

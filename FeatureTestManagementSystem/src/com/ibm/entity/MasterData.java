@@ -28,8 +28,7 @@ public class MasterData implements Serializable {
 	@Column
 	private String catdata;
 	
-	@Column(nullable = false, length = 20)
-	private String status;
+
 
 	@Column(nullable=false, length=40)
 	private String createdby;
@@ -82,18 +81,7 @@ public class MasterData implements Serializable {
 		this.catdata = catdata;
 	}
 	
-	/**
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+	
 	/**
 	 * @return the createdby
 	 */
