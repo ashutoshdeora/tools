@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class AccountRun implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
+	@Id@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true, nullable=false, precision=22)
 	private long accountrunid;
 

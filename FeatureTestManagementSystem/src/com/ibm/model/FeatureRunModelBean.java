@@ -3,6 +3,8 @@ package com.ibm.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.ibm.entity.FeatureMaster;
+
 public class FeatureRunModelBean implements Serializable{
 	
 	/**
@@ -14,7 +16,9 @@ public class FeatureRunModelBean implements Serializable{
 	private String featureRunPhase;
 	private String featureRunResult;
 	private String featureTestPhase;
+	private long featuremasterID;
 	private boolean readyForinsert;
+	private FeatureMaster featureMaster;
 	/**
 	 * @return the featureSetId
 	 */
@@ -86,6 +90,30 @@ public class FeatureRunModelBean implements Serializable{
 	 */
 	public void setReadyForinsert(boolean readyForinsert) {
 		this.readyForinsert = readyForinsert;
+	}
+	/**
+	 * @return the featuremasterID
+	 */
+	public long getFeaturemasterID() {
+		return featuremasterID;
+	}
+	/**
+	 * @param featuremasterID the featuremasterID to set
+	 */
+	public void setFeaturemasterID(long featuremasterID) {
+		this.featuremasterID = featuremasterID;
+	}
+	/**
+	 * @return the featureMaster
+	 */
+	public FeatureMaster getFeatureMaster() {
+		return featureMaster;
+	}
+	/**
+	 * @param featureMaster the featureMaster to set
+	 */
+	public void setFeatureMaster(FeatureMaster featureMaster) {
+		this.featureMaster = featureMaster;
 	}
 	
 

@@ -17,12 +17,12 @@ import java.util.List;
 public class DatasetRun implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
+	@Id@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true, nullable=false, precision=22)
 	private long datasetrunid;
 
 	@Column(nullable=false, precision=22)
-	private BigDecimal parentdatasetrunid;
+	private long parentdatasetrunid;
 
 	@Column(nullable=false, length=2)
 	private String readyforrun;
@@ -67,11 +67,11 @@ public class DatasetRun implements Serializable {
 		this.datasetrunid = datasetrunid;
 	}
 
-	public BigDecimal getParentdatasetrunid() {
+	public long getParentdatasetrunid() {
 		return this.parentdatasetrunid;
 	}
 
-	public void setParentdatasetrunid(BigDecimal parentdatasetrunid) {
+	public void setParentdatasetrunid(long parentdatasetrunid) {
 		this.parentdatasetrunid = parentdatasetrunid;
 	}
 
