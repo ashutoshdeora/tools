@@ -19,6 +19,9 @@ public class FeatureRunModelBean implements Serializable{
 	private long featuremasterID;
 	private boolean readyForinsert;
 	private FeatureMaster featureMaster;
+	private String inputDefects;
+	private String defectsData;
+	private List<String> defectList;
 	/**
 	 * @return the featureSetId
 	 */
@@ -114,6 +117,42 @@ public class FeatureRunModelBean implements Serializable{
 	 */
 	public void setFeatureMaster(FeatureMaster featureMaster) {
 		this.featureMaster = featureMaster;
+	}
+	/**
+	 * @return the inputDefects
+	 */
+	public String getInputDefects() {
+		return inputDefects;
+	}
+	/**
+	 * @param inputDefects the inputDefects to set
+	 */
+	public void setInputDefects(String inputDefects) {
+		this.inputDefects = inputDefects;
+	}
+	/**
+	 * @return the defectsData
+	 */
+	public String getDefectsData() {
+		return defectsData;
+	}
+	/**
+	 * @param defectsData the defectsData to set
+	 */
+	public void setDefectsData(String defectsData) {
+		this.defectsData = defectsData;
+	}
+	/**
+	 * @return the defectList
+	 */
+	public List<String> getDefectList() {
+		return defectList;
+	}
+	/**
+	 * @param defectList the defectList to set
+	 */
+	public void setDefectList(List<String> defectList) {
+		this.defectList = defectList;
 	}
 	
 

@@ -1,8 +1,13 @@
 package com.ibm.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 
 /**
@@ -24,18 +29,11 @@ public class DatasetRunDefect implements Serializable {
 	@Column(nullable=false, length=20)
 	private String defectstatus;
 
+	@Column(precision=22)
+	private BigDecimal featurerunid;
+
 	@Column(nullable=false, precision=22)
 	private BigDecimal hpqcdefectid;
-
-	//bi-directional many-to-one association to DatasetRun
-	@ManyToOne
-	@JoinColumn(name="DATASETRUNID", nullable=false, insertable=false, updatable=false)
-	private DatasetRun datasetrun;
-
-	//bi-directional many-to-one association to FeatureRun
-	@ManyToOne
-	@JoinColumn(name="FEATURERUNID")
-	private FeatureRun featurerun;
 
 	public DatasetRunDefect() {
 	}
@@ -64,28 +62,20 @@ public class DatasetRunDefect implements Serializable {
 		this.defectstatus = defectstatus;
 	}
 
+	public BigDecimal getFeaturerunid() {
+		return this.featurerunid;
+	}
+
+	public void setFeaturerunid(BigDecimal featurerunid) {
+		this.featurerunid = featurerunid;
+	}
+
 	public BigDecimal getHpqcdefectid() {
 		return this.hpqcdefectid;
 	}
 
 	public void setHpqcdefectid(BigDecimal hpqcdefectid) {
 		this.hpqcdefectid = hpqcdefectid;
-	}
-
-	public DatasetRun getDatasetrun() {
-		return this.datasetrun;
-	}
-
-	public void setDatasetrun(DatasetRun datasetrun) {
-		this.datasetrun = datasetrun;
-	}
-
-	public FeatureRun getFeaturerun() {
-		return this.featurerun;
-	}
-
-	public void setFeaturerun(FeatureRun featurerun) {
-		this.featurerun = featurerun;
 	}
 
 }

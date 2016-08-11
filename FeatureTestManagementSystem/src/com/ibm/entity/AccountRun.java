@@ -1,7 +1,17 @@
 package com.ibm.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 
 /**
@@ -18,15 +28,13 @@ public class AccountRun implements Serializable {
 	@Column(unique=true, nullable=false, precision=22)
 	private long accountrunid;
 
+	@Column(nullable=false, precision=22)
+	private BigDecimal datasetrunid;
+
 	//bi-directional many-to-one association to AccountMaster
 	@ManyToOne
 	@JoinColumn(name="ACCOUNTMASTERID", nullable=false)
 	private AccountMaster accountmaster;
-
-	//bi-directional many-to-one association to DatasetRun
-	@ManyToOne
-	@JoinColumn(name="DATASETRUNID", nullable=false)
-	private DatasetRun datasetrun;
 
 	public AccountRun() {
 	}
@@ -39,20 +47,20 @@ public class AccountRun implements Serializable {
 		this.accountrunid = accountrunid;
 	}
 
+	public BigDecimal getDatasetrunid() {
+		return this.datasetrunid;
+	}
+
+	public void setDatasetrunid(BigDecimal datasetrunid) {
+		this.datasetrunid = datasetrunid;
+	}
+
 	public AccountMaster getAccountmaster() {
 		return this.accountmaster;
 	}
 
 	public void setAccountmaster(AccountMaster accountmaster) {
 		this.accountmaster = accountmaster;
-	}
-
-	public DatasetRun getDatasetrun() {
-		return this.datasetrun;
-	}
-
-	public void setDatasetrun(DatasetRun datasetrun) {
-		this.datasetrun = datasetrun;
 	}
 
 }

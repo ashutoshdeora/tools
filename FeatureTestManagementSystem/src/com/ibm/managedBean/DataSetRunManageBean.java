@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,9 @@ import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
+import org.primefaces.event.RowEditEvent;
+import org.python.core.exceptions;
 
 import com.ibm.entity.AccountMaster;
 import com.ibm.entity.AccountRun;
@@ -153,7 +157,7 @@ public class DataSetRunManageBean implements Serializable {
 	}
 
 	private void populateDataSetRunData() {
-		datasetRunsList.get(0).getFeatureruns().get(0).getFeaturemaster();
+		// datasetRunsList.get(0).getFeatureruns().get(0).getFeaturemaster();
 	}
 
 	public void onResultChange() {
@@ -232,90 +236,147 @@ public class DataSetRunManageBean implements Serializable {
 		showfeatureDefectPanel = false;
 	}
 
+	public void onRowEdit(RowEditEvent event) {
+		FeatureRunModelBean featureRunModelBean = (FeatureRunModelBean) event.getObject();
+
+		// set all required data and reset all drop down fields in else
+
+		String defectString = featureRunModelBean.getInputDefects();
+		ArrayList<String> defList = new ArrayList<String>(Arrays.asList(defectString.split(",")));
+		if (validateWithRest(defList)) {
+			featureRunModelBean.setFeatureRunPhase(selectedFeaturePhase);
+			featureRunModelBean.setFeatureRunResult(selectedFeatureResult);
+			featureRunModelBean.setFeatureTestPhase(selectedTestPhase);
+			featureRunModelBean.setDefectsData(defectString);
+			featureRunModelBean.setDefectList(defList);
+			selectedFeaturePhase = new String();
+			selectedFeatureResult = new String();
+			selectedTestPhase = new String();
+			FacesMessage msg = new FacesMessage("Row Edited", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		} else {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "One of defect not present in HPQC", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+
+		}
+	}
+
+	private boolean validateWithRest(ArrayList<String> defList) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void onRowCancel(RowEditEvent event) {
+		FacesMessage msg = new FacesMessage("Edit Cancelled", null);
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+	}
+
 	public void saveDataSetRun() {
-		showfeatureDefectPanel = false;
-		if (selectedDataSetphase.length() > 0 && testScriptComments.trim().length() > 0) {
-			// insert data in data set run
-			boolean datasetRunstatusfailed = false;
-			DatasetRun datasetRun = new DatasetRun();
+		try {
+			showfeatureDefectPanel = false;
+			if (selectedDataSetphase.length() > 0 && testScriptComments.trim().length() > 0) {
+				// insert data in data set run
+				boolean datasetRunstatusfailed = false;
+				DatasetRun datasetRun = new DatasetRun();
 
-			datasetRun.setRuntime(new Timestamp(new Date().getTime()));
-			datasetRun.setRunby("user");
-			datasetRun.setRunphase(selectedDataSetphase);
-			datasetRun.setReadyforrun(READYFORRERUNYES);
+				datasetRun.setRuntime(new Timestamp(new Date().getTime()));
+				datasetRun.setRunby("user");
+				datasetRun.setRunphase(selectedDataSetphase);
+				datasetRun.setReadyforrun(READYFORRERUNYES);
 
-			// calculate run status for dataset.
-			if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
-				for (FeatureRunModelBean bean : featureRunModelBeansList) {
-					if (bean.getDefectBeansList().size() > 0) {
-						datasetRunstatusfailed = true;
-						break;
+				// calculate run status for dataset.
+				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
+					for (FeatureRunModelBean bean : featureRunModelBeansList) {
+						if (bean.getDefectBeansList().size() > 0) {
+							datasetRunstatusfailed = true;
+							break;
+						}
 					}
 				}
-			}
-			if (datasetRunstatusfailed) {
-				datasetRun.setRunstatus(DATASETRUNFAILED);
-			} else {
-				datasetRun.setRunstatus(DATASETRUNPASS);
-			}
-			DatasetRun runmerged = new DatasetRun();
-			EntityManager entityManager = getEntitymanagerFromCurrent();
-			entityManager.getTransaction().begin();
-			runmerged = entityManager.merge(datasetRun);
-			entityManager.getTransaction().commit();
-			entityManager.close();
+				if (datasetRunstatusfailed) {
+					datasetRun.setRunstatus(DATASETRUNFAILED);
+				} else {
+					datasetRun.setRunstatus(DATASETRUNPASS);
+				}
 
-			List<FeatureRun> featureRuns = new ArrayList<FeatureRun>();
-			FeatureRun run = null;
-			for (FeatureRunModelBean bean : featureRunModelBeansList) {
-				run = new FeatureRun();
-				run.setDatasetrun(runmerged);
-				run.setFeaturemaster(bean.getFeatureMaster());
-				run.setStatus(bean.getFeatureRunResult());
-				entityManager = getEntitymanagerFromCurrent();
+				DatasetRun runmerged = new DatasetRun();
+				EntityManager entityManager = getEntitymanagerFromCurrent();
 				entityManager.getTransaction().begin();
-				entityManager.persist(run);
+				runmerged = entityManager.merge(datasetRun);
 				entityManager.getTransaction().commit();
 				entityManager.close();
 
-			}
-
-			// now we have datasetRun ID
-			List<AccountRun> accountRuns = new ArrayList<AccountRun>();
-			AccountRun accountRun = null;
-			for (AccountMaster accountMaster : accountmastersList) {
-				accountRun = new AccountRun();
-				accountRun.setAccountmaster(accountMaster);
-				accountRun.setDatasetrun(runmerged);
-				entityManager = getEntitymanagerFromCurrent();
-				entityManager.getTransaction().begin();
-				entityManager.persist(accountRun);
-				entityManager.getTransaction().commit();
-				entityManager.close();
-
-			}
-
-			DatasetRunDefect defect = new DatasetRunDefect();
-			DatasetRunDefectPK pk = new DatasetRunDefectPK();
-			pk.setDatasetrunid(runmerged.getDatasetrunid());
-			if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
+				FeatureRun run = null;
+				FeatureRun featureRunMerged = null;
 				for (FeatureRunModelBean bean : featureRunModelBeansList) {
+					run = new FeatureRun();
+					featureRunMerged = new FeatureRun();
+					run.setDatasetrunid(BigDecimal.valueOf(runmerged.getDatasetrunid()));
+					run.setFeaturemasterid(BigDecimal.valueOf(bean.getFeaturemasterID()));
+					run.setStatus(bean.getFeatureRunResult());
+					entityManager = getEntitymanagerFromCurrent();
+					entityManager.getTransaction().begin();
+					featureRunMerged = entityManager.merge(run);
+					entityManager.getTransaction().commit();
+					entityManager.close();
+
+					DatasetRunDefect defect = null;
+					ArrayList<DatasetRunDefect> list = new ArrayList<DatasetRunDefect>();
+					DatasetRunDefectPK pk = new DatasetRunDefectPK();
+					pk.setDatasetrunid(runmerged.getDatasetrunid());
 					if (bean.getDefectBeansList().size() > 0) {
 						for (DefectBean defectBean : bean.getDefectBeansList()) {
-							defect.setDatasetrun(runmerged);
+							defect = new DatasetRunDefect();
+							defect.setFeaturerunid(BigDecimal.valueOf(featureRunMerged.getFeaturerunid()));
 							defect.setDefectsevrity("High");
 							defect.setDefectstatus(FAILED);
 							defect.setHpqcdefectid(new BigDecimal(defectBean.getHPQCID()));
 							defect.setId(pk);
+							list.add(defect);
 						}
+						entityManager = getEntitymanagerFromCurrent();
+						entityManager.getTransaction().begin();
+						entityManager.persist(list);
+						entityManager.getTransaction().commit();
+						entityManager.close();
 					}
 				}
-			}
 
-		} else {
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Cannot Save Data without required fields");
+				// now we have datasetRun ID
+				List<AccountRun> accountRuns = new ArrayList<AccountRun>();
+				AccountRun accountRun = null;
+				for (AccountMaster accountMaster : accountmastersList) {
+					accountRun = new AccountRun();
+					accountRun.setAccountmaster(accountMaster);
+					accountRun.setDatasetrunid(BigDecimal.valueOf(runmerged.getDatasetrunid()));
+					accountRuns.add(accountRun);
+
+				}
+				entityManager = getEntitymanagerFromCurrent();
+				entityManager.getTransaction().begin();
+				entityManager.persist(accountRuns);
+				entityManager.getTransaction().commit();
+				entityManager.close();
+
+				DatasetRun remerge = new DatasetRun();
+
+				remerge = runmerged;
+				remerge.setParentdatasetrunid(BigDecimal.valueOf(runmerged.getDatasetrunid()));
+
+				entityManager = getEntitymanagerFromCurrent();
+				entityManager.getTransaction().begin();
+				entityManager.merge(remerge);
+				entityManager.getTransaction().commit();
+				entityManager.close();
+
+			} else {
+				FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Cannot Save Data without required fields");
+				FacesContext.getCurrentInstance().addMessage(null, msg);
+				return;
+			}
+		} catch (Exception exception) {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Some Error");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			return;
 		}
 	}
 

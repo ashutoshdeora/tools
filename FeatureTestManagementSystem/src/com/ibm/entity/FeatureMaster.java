@@ -90,9 +90,7 @@ public class FeatureMaster implements Serializable {
 			@JoinColumn(name = "DATASETID", nullable = false) })
 	private List<DatasetMaster> datasetmasters;
 
-	// bi-directional many-to-one association to FeatureRun
-	@OneToMany(mappedBy = "featuremaster")
-	private List<FeatureRun> featureruns;
+	
 
 	public FeatureMaster() {
 	}
@@ -269,28 +267,6 @@ public class FeatureMaster implements Serializable {
 
 	public void setDatasetmasters(List<DatasetMaster> datasetmasters) {
 		this.datasetmasters = datasetmasters;
-	}
-
-	public List<FeatureRun> getFeatureruns() {
-		return this.featureruns;
-	}
-
-	public void setFeatureruns(List<FeatureRun> featureruns) {
-		this.featureruns = featureruns;
-	}
-
-	public FeatureRun addFeaturerun(FeatureRun featurerun) {
-		getFeatureruns().add(featurerun);
-		featurerun.setFeaturemaster(this);
-
-		return featurerun;
-	}
-
-	public FeatureRun removeFeaturerun(FeatureRun featurerun) {
-		getFeatureruns().remove(featurerun);
-		featurerun.setFeaturemaster(null);
-
-		return featurerun;
 	}
 
 	/**

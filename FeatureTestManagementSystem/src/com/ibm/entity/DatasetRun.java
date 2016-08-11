@@ -1,10 +1,18 @@
 package com.ibm.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 
 /**
@@ -22,7 +30,7 @@ public class DatasetRun implements Serializable {
 	private long datasetrunid;
 
 	@Column(nullable=false, precision=22)
-	private long parentdatasetrunid;
+	private BigDecimal parentdatasetrunid;
 
 	@Column(nullable=false, length=2)
 	private String readyforrun;
@@ -39,22 +47,10 @@ public class DatasetRun implements Serializable {
 	@Column(nullable=false)
 	private Timestamp runtime;
 
-	//bi-directional many-to-one association to AccountRun
-	@OneToMany(mappedBy="datasetrun")
-	private List<AccountRun> accountruns;
-
 	//bi-directional many-to-one association to DatasetMaster
 	@ManyToOne
 	@JoinColumn(name="DATASETID", nullable=false)
 	private DatasetMaster datasetmaster;
-
-	//bi-directional many-to-one association to DatasetRunDefect
-	@OneToMany(mappedBy="datasetrun")
-	private List<DatasetRunDefect> datasetrundefects;
-
-	//bi-directional many-to-one association to FeatureRun
-	@OneToMany(mappedBy="datasetrun")
-	private List<FeatureRun> featureruns;
 
 	public DatasetRun() {
 	}
@@ -67,11 +63,11 @@ public class DatasetRun implements Serializable {
 		this.datasetrunid = datasetrunid;
 	}
 
-	public long getParentdatasetrunid() {
+	public BigDecimal getParentdatasetrunid() {
 		return this.parentdatasetrunid;
 	}
 
-	public void setParentdatasetrunid(long parentdatasetrunid) {
+	public void setParentdatasetrunid(BigDecimal parentdatasetrunid) {
 		this.parentdatasetrunid = parentdatasetrunid;
 	}
 
@@ -115,78 +111,12 @@ public class DatasetRun implements Serializable {
 		this.runtime = runtime;
 	}
 
-	public List<AccountRun> getAccountruns() {
-		return this.accountruns;
-	}
-
-	public void setAccountruns(List<AccountRun> accountruns) {
-		this.accountruns = accountruns;
-	}
-
-	public AccountRun addAccountrun(AccountRun accountrun) {
-		getAccountruns().add(accountrun);
-		accountrun.setDatasetrun(this);
-
-		return accountrun;
-	}
-
-	public AccountRun removeAccountrun(AccountRun accountrun) {
-		getAccountruns().remove(accountrun);
-		accountrun.setDatasetrun(null);
-
-		return accountrun;
-	}
-
 	public DatasetMaster getDatasetmaster() {
 		return this.datasetmaster;
 	}
 
 	public void setDatasetmaster(DatasetMaster datasetmaster) {
 		this.datasetmaster = datasetmaster;
-	}
-
-	public List<DatasetRunDefect> getDatasetrundefects() {
-		return this.datasetrundefects;
-	}
-
-	public void setDatasetrundefects(List<DatasetRunDefect> datasetrundefects) {
-		this.datasetrundefects = datasetrundefects;
-	}
-
-	public DatasetRunDefect addDatasetrundefect(DatasetRunDefect datasetrundefect) {
-		getDatasetrundefects().add(datasetrundefect);
-		datasetrundefect.setDatasetrun(this);
-
-		return datasetrundefect;
-	}
-
-	public DatasetRunDefect removeDatasetrundefect(DatasetRunDefect datasetrundefect) {
-		getDatasetrundefects().remove(datasetrundefect);
-		datasetrundefect.setDatasetrun(null);
-
-		return datasetrundefect;
-	}
-
-	public List<FeatureRun> getFeatureruns() {
-		return this.featureruns;
-	}
-
-	public void setFeatureruns(List<FeatureRun> featureruns) {
-		this.featureruns = featureruns;
-	}
-
-	public FeatureRun addFeaturerun(FeatureRun featurerun) {
-		getFeatureruns().add(featurerun);
-		featurerun.setDatasetrun(this);
-
-		return featurerun;
-	}
-
-	public FeatureRun removeFeaturerun(FeatureRun featurerun) {
-		getFeatureruns().remove(featurerun);
-		featurerun.setDatasetrun(null);
-
-		return featurerun;
 	}
 
 }
