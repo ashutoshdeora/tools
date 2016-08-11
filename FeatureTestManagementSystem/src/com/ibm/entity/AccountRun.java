@@ -31,10 +31,12 @@ public class AccountRun implements Serializable {
 	@Column(nullable=false, precision=22)
 	private BigDecimal datasetrunid;
 
-	//bi-directional many-to-one association to AccountMaster
-	@ManyToOne
-	@JoinColumn(name="ACCOUNTMASTERID", nullable=false)
-	private AccountMaster accountmaster;
+
+	
+	@Column(nullable=false, precision=22)
+	private BigDecimal accountmasterid;
+	
+	
 
 	public AccountRun() {
 	}
@@ -55,12 +57,20 @@ public class AccountRun implements Serializable {
 		this.datasetrunid = datasetrunid;
 	}
 
-	public AccountMaster getAccountmaster() {
-		return this.accountmaster;
+	/**
+	 * @return the accountmasterid
+	 */
+	public BigDecimal getAccountmasterid() {
+		return accountmasterid;
 	}
 
-	public void setAccountmaster(AccountMaster accountmaster) {
-		this.accountmaster = accountmaster;
+	/**
+	 * @param accountmasterid the accountmasterid to set
+	 */
+	public void setAccountmasterid(BigDecimal accountmasterid) {
+		this.accountmasterid = accountmasterid;
 	}
+
+
 
 }

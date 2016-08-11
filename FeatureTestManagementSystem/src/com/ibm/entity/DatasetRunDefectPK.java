@@ -13,7 +13,7 @@ public class DatasetRunDefectPK implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(unique=true, nullable=false, precision=22)
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long rundefectid;
 
 	@Column(unique=true, nullable=false, precision=22)

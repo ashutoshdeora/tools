@@ -29,7 +29,7 @@ public class DatasetRun implements Serializable {
 	@Column(unique=true, nullable=false, precision=22)
 	private long datasetrunid;
 
-	@Column(nullable=false, precision=22)
+	@Column(nullable=true, precision=22)
 	private BigDecimal parentdatasetrunid;
 
 	@Column(nullable=false, length=2)

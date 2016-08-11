@@ -44,9 +44,7 @@ public class AccountMaster implements Serializable {
 	@Transient
 	private String datasetId;
 
-	// bi-directional many-to-one association to AccountRun
-	@OneToMany(mappedBy = "accountmaster")
-	private List<AccountRun> accountruns;
+
 
 	// bi-directional many-to-one association to DatasetAccountHistory
 	@OneToMany(mappedBy = "accountmaster")
@@ -123,28 +121,6 @@ public class AccountMaster implements Serializable {
 
 	public void setUpdatedby(String updatedby) {
 		this.updatedby = updatedby;
-	}
-
-	public List<AccountRun> getAccountruns() {
-		return this.accountruns;
-	}
-
-	public void setAccountruns(List<AccountRun> accountruns) {
-		this.accountruns = accountruns;
-	}
-
-	public AccountRun addAccountrun(AccountRun accountrun) {
-		getAccountruns().add(accountrun);
-		accountrun.setAccountmaster(this);
-
-		return accountrun;
-	}
-
-	public AccountRun removeAccountrun(AccountRun accountrun) {
-		getAccountruns().remove(accountrun);
-		accountrun.setAccountmaster(null);
-
-		return accountrun;
 	}
 
 	public List<DatasetAccountHistory> getDatasetaccounthistories() {
