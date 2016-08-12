@@ -90,6 +90,7 @@ public class DataSetRunManageBean implements Serializable {
 	private boolean tablePermission;
 	private boolean panelPermission;
 	private boolean showfeatureDefectPanel;
+	private DatasetMaster masterForDropDown;
 
 	@PostConstruct
 	private void init() {
@@ -273,6 +274,25 @@ public class DataSetRunManageBean implements Serializable {
 		FacesMessage msg = new FacesMessage("Row Edited", null);
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
+	
+	public List<String> completeText(String query) {
+        List<String> results = new ArrayList<String>();
+        for(int i = 0; i < 10; i++) {
+            results.add(query + i);
+        }
+        return results;
+    }
+     
+    public List<DatasetMaster> completeTheme(String query) {
+        List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
+        for (int i = 0; i < datasetmastersList.size(); i++) {
+            String dataSetname = datasetmastersList.get(i).getDatasetname();
+            if(dataSetname.toLowerCase().contains(query)) {
+            	tempList.add(datasetmastersList.get(i));
+            }
+        }
+        return tempList;
+    }
 
 	private boolean validateWithRest(ArrayList<String> defList) {
 		// TODO Auto-generated method stub
@@ -842,6 +862,20 @@ public class DataSetRunManageBean implements Serializable {
 	 */
 	public void setDataSetRunBeansList(List<DataSetRunBean> dataSetRunBeansList) {
 		this.dataSetRunBeansList = dataSetRunBeansList;
+	}
+
+	/**
+	 * @return the masterForDropDown
+	 */
+	public DatasetMaster getMasterForDropDown() {
+		return masterForDropDown;
+	}
+
+	/**
+	 * @param masterForDropDown the masterForDropDown to set
+	 */
+	public void setMasterForDropDown(DatasetMaster masterForDropDown) {
+		this.masterForDropDown = masterForDropDown;
 	}
 
 }

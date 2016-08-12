@@ -182,7 +182,7 @@ ul.tab li a:focus, .active {
 }
 
 .column_3_style{
-	width: 55%
+	width: 57%
 }
 
 .transparent_col{
@@ -191,4 +191,8 @@ ul.tab li a:focus, .active {
 
 .row_style{
 	background-color: #FFFFFF;
+}
+
+.grid_style .ui-widget-content {
+	border: 1px solid transparent!important;
 }

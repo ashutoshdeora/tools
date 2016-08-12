@@ -40,6 +40,15 @@
 													</p:selectOneMenu></td>
 											</tr>
 											<tr>
+												<td><p:outputLabel value="Pojo:" for="themePojo" /></td>
+												<td><p:autoComplete id="themePojo" 
+														value="#{dataSetRunManageBean.masterForDropDown}"
+														completeMethod="#{dataSetRunManageBean.completeTheme}"
+														var="theme" itemLabel="#{theme.datasetname}"
+														itemValue="#{theme}" converter="dataSetConverter"
+														forceSelection="true" /></td>
+											</tr>
+											<tr>
 												<td><h:outputLabel value="Comments for Run"
 														for="commentsText" /></td>
 												<td><p:inputText id="commentsText" style="width:260px;"
@@ -180,30 +189,9 @@
 				</tr>
 				<tr>
 					<td>
-						<!-- <p:dataTable
-							value="#{dataSetRunManageBean.dataSetRunBeansList}" var="dsr"
-							stickyHeader="true">
-							<p:columnGroup type="header">
-								<p:row>
-									<p:column rowspan="3" headerText="Data Set Details" />
-									<p:column colspan="5" headerText="Feature Details" />
-
-								</p:row>
-								<p:row>
-									<p:column colspan="2" headerText="Feature" />
-									<p:column colspan="3" headerText="Defects" />
-								</p:row>
-								<p:row>
-									<p:column headerText="Feature Id" />
-									<p:column headerText="Feature Run Status" />
-									<p:column headerText="HPQC ID" />
-									<p:column headerText="Status" />
-									<p:column headerText="Severity" />
-								</p:row>
-							</p:columnGroup>
-						</p:dataTable> --> <h:panelGroup id="dats_pnlg">
+						 <h:panelGroup id="dats_pnlg">
 							<p:dataTable value="#{dataSetRunManageBean.dataSetRunBeansList}"
-								var="dsr" stickyHeader="true" rowStyleClass="row_style" >
+								var="dsr" stickyHeader="true" rowStyleClass="row_style">
 
 								<p:columnGroup type="header">
 									<p:row>
@@ -228,7 +216,7 @@
 									</p:row>
 								</p:columnGroup>
 								<p:column headerText="DataSetDetails">
-									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid"
+									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid" styleClass="grid_style"
 										rows="6">
 										<table>
 											<tr>
@@ -252,25 +240,31 @@
 									</p:dataGrid>
 								</p:column>
 								<p:column headerText="Accounts">
-									<h:dataTable value="#{dsr.datasetMaster.accountmasters}" rowClasses="transparent_col"
-										var="accn">
+									<!-- <h:dataTable value="#{dsr.datasetMaster.accountmasters}"
+										rowClasses="transparent_col" var="accn">
 										<h:column>
 											<h:outputText value="#{accn.accountname}" />
 										</h:column>
-									</h:dataTable>
+									</h:dataTable> -->
 								</p:column>
 								<p:column headerText="Feature Run Details" colspan="5">
-									<h:dataTable value="#{dsr.featureForDataSetRunBeansList}" style="border: none;"  cellpadding="0" cellspacing="0"
-										var="fsr" columnClasses="column_1_style,column_2_style,column_3_style" >
+									<h:dataTable value="#{dsr.featureForDataSetRunBeansList}"
+										style="border: none;" cellpadding="0" cellspacing="0"
+										var="fsr"
+										columnClasses="column_1_style,column_2_style,column_3_style">
 										<h:column>
 											<h:outputText value="#{fsr.featureMaster.featureid}" />
 										</h:column>
 										<h:column>
 											<h:outputText value="#{fsr.status}" />
 										</h:column>
-										<h:column >
-											<h:dataTable value="#{fsr.datasetRunDefectsList}" rendered="#{fsr.datasetRunDefectsList.size() gt 0}"
-											var="defs" style="border: none;"  cellpadding="0" cellspacing="0" columnClasses="transparent_col,transparent_col,transparent_col" rowClasses="transparent_col">
+										<h:column>
+											<h:dataTable value="#{fsr.datasetRunDefectsList}"
+												rendered="#{fsr.datasetRunDefectsList.size() gt 0}"
+												var="defs" style="border: none;" cellpadding="0"
+												cellspacing="0"
+												columnClasses="transparent_col,transparent_col,transparent_col"
+												rowClasses="transparent_col">
 												<h:column>
 													<h:outputText value="#{defs.hpqcdefectid}" />
 												</h:column>
