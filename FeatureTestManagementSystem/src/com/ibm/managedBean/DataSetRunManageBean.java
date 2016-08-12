@@ -29,7 +29,9 @@ import com.ibm.entity.DatasetRunDefectPK;
 import com.ibm.entity.FeatureMaster;
 import com.ibm.entity.FeatureRun;
 import com.ibm.entity.MasterData;
+import com.ibm.model.DataSetRunBean;
 import com.ibm.model.DefectBean;
+import com.ibm.model.FeatureForDataSetRunBean;
 import com.ibm.model.FeatureRunModelBean;
 
 @ManagedBean
@@ -71,6 +73,8 @@ public class DataSetRunManageBean implements Serializable {
 	private List<MasterData> datasetPhaseDropDown;
 	private List<DefectBean> defectaddingList;
 	private List<FeatureRunModelBean> featureRunModelBeansList;
+	private List<DataSetRunBean> dataSetRunBeansList;
+	
 
 	private boolean showDefectGroup;
 	private FeatureMaster selecetdFeature;
@@ -96,6 +100,7 @@ public class DataSetRunManageBean implements Serializable {
 			defectaddingList = new ArrayList<DefectBean>();
 			showfeatureDefectPanel = false;
 			featureRunModelBeansList = new ArrayList<FeatureRunModelBean>();
+			populateDataSetRunData();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Application/Data Error", exception.getLocalizedMessage());
@@ -152,11 +157,7 @@ public class DataSetRunManageBean implements Serializable {
 				datasetPhaseDropDown.add(masterData);
 			}
 		}
-
-	}
-
-	private void populateDataSetRunData() {
-		// datasetRunsList.get(0).getFeatureruns().get(0).getFeaturemaster();
+		
 	}
 
 	public void onResultChange() {
@@ -343,8 +344,8 @@ public class DataSetRunManageBean implements Serializable {
 					entityManager.getTransaction().commit();
 
 					DatasetRunDefect defect = null;
-					
-					if (bean.getDefectList()!=null && bean.getDefectList().size() > 0) {
+
+					if (bean.getDefectList() != null && bean.getDefectList().size() > 0) {
 						for (String defectBean : bean.getDefectList()) {
 							defect = new DatasetRunDefect();
 							defect.setFeaturerunid(BigDecimal.valueOf(featureRunMerged.getFeaturerunid()));
@@ -357,14 +358,14 @@ public class DataSetRunManageBean implements Serializable {
 							entityManager.getTransaction().begin();
 							entityManager.persist(defect);
 							entityManager.getTransaction().commit();
-							
+
 						}
 
 					}
 				}
 
 				// now we have datasetRun ID
-				
+
 				AccountRun accountRun = null;
 				for (AccountMaster accountMaster : accountmastersList) {
 					accountRun = new AccountRun();
@@ -375,10 +376,9 @@ public class DataSetRunManageBean implements Serializable {
 					entityManager.getTransaction().commit();
 
 				}
-				
 
-				
 				entityManager.close();
+				populateDataSetRunData();
 
 			} else {
 				FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Cannot Save Data without required fields");
@@ -398,6 +398,50 @@ public class DataSetRunManageBean implements Serializable {
 		setShowfeatureDefectPanel(true);
 		System.out.println(featureMaster);
 		selectedFeatureID = featureMaster.getFeatureSetId();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void populateDataSetRunData() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+
+		dataSetRunBeansList = new ArrayList<DataSetRunBean>();
+		List<DatasetRun> datasetRunsList = new ArrayList<DatasetRun>();
+		List<DatasetMaster> datasetMastersList = new ArrayList<DatasetMaster>();
+		List<FeatureRun> featureRuns = new ArrayList<FeatureRun>();
+		
+		List<FeatureForDataSetRunBean> featureForDataSetRunBeans = null;
+		List<DatasetRunDefect>  datasetRunDefectsList = null;
+		FeatureForDataSetRunBean bean = null;
+		entityManager.getTransaction().begin();
+		
+		datasetRunsList = entityManager.createNamedQuery("DatasetRun.findAll").getResultList();
+		DataSetRunBean dataSetRunBean = null;
+		for (DatasetRun datasetRun : datasetRunsList) {
+			dataSetRunBean = new DataSetRunBean();
+			datasetMastersList.add(datasetRun.getDatasetmaster());
+			featureRuns = entityManager.createQuery("select fr from FeatureRun fr where fr.datasetrunid = :datasetrunid")
+					.setParameter("datasetrunid", BigDecimal.valueOf(datasetRun.getDatasetrunid())).getResultList();
+			featureForDataSetRunBeans = new ArrayList<FeatureForDataSetRunBean>();
+			for(FeatureRun featureRun :featureRuns){
+				datasetRunDefectsList = new ArrayList<DatasetRunDefect>();
+				datasetRunDefectsList =  entityManager.createQuery("select df from DatasetRunDefect df where df.featurerunid = :featurerunid")
+										.setParameter("featurerunid", BigDecimal.valueOf(featureRun.getFeaturerunid())).getResultList();
+				FeatureMaster featureMaster = (FeatureMaster) entityManager.createQuery("select fm from FeatureMaster fm where fm.featureid =:featureid")
+						.setParameter("featureid", featureRun.getFeaturemasterid().longValue()).getSingleResult();
+				bean = new FeatureForDataSetRunBean();
+				bean.setDatasetRunDefectsList(datasetRunDefectsList);
+				bean.setFeatureMaster(featureMaster);
+				bean.setFeaturerunid(featureRun.getFeaturerunid());
+				bean.setStatus(featureRun.getStatus());
+				featureForDataSetRunBeans.add(bean);					
+			}
+			dataSetRunBean.setDatasetMaster(datasetRun.getDatasetmaster());
+			dataSetRunBean.setDatasetRun(datasetRun);
+			dataSetRunBean.setFeatureForDataSetRunBeansList(featureForDataSetRunBeans);
+			dataSetRunBeansList.add(dataSetRunBean);
+		}
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 
 	/**
@@ -783,6 +827,21 @@ public class DataSetRunManageBean implements Serializable {
 	 */
 	public void setFeatureRunModelBeansList(List<FeatureRunModelBean> featureRunModelBeansList) {
 		this.featureRunModelBeansList = featureRunModelBeansList;
+	}
+
+	/**
+	 * @return the dataSetRunBeansList
+	 */
+	public List<DataSetRunBean> getDataSetRunBeansList() {
+		return dataSetRunBeansList;
+	}
+
+	/**
+	 * @param dataSetRunBeansList
+	 *            the dataSetRunBeansList to set
+	 */
+	public void setDataSetRunBeansList(List<DataSetRunBean> dataSetRunBeansList) {
+		this.dataSetRunBeansList = dataSetRunBeansList;
 	}
 
 }

@@ -68,7 +68,7 @@
 }
 
 .header_style_template {
-	background-color: #FF9D26;
+	background-color: #9626FF;
 	font-family: calibri;
 	color: #FFFFFF;
 	padding: 1px;
@@ -80,7 +80,7 @@
 	background: transparent none repeat scroll 0 0;
 	border: 0 none;
 	color: #ffffff;
-	font-size: 7em;
+	font-size: 4em;
 	text-align: center;
 }
 
@@ -171,4 +171,24 @@ ul.tab li a:focus, .active {
     border: 1px solid #156090;
     color: #fff;
     
+}
+
+.column_1_style{
+	border: 1px solid transparent;
+}
+
+.column_2_style{
+	
+}
+
+.column_3_style{
+	width: 55%
+}
+
+.transparent_col{
+	border: 1px solid transparent!important;
+}
+
+.row_style{
+	background-color: #FFFFFF;
 }

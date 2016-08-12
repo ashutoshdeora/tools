@@ -171,126 +171,123 @@
 								<tr>
 									<td colspan="2"><p:commandButton
 											value="Submit Data Set Run"
-											actionListener="#{dataSetRunManageBean.saveDataSetRun}"></p:commandButton></td>
+											actionListener="#{dataSetRunManageBean.saveDataSetRun}"
+											update="dats_pnlg"></p:commandButton></td>
 
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
 								</tr>
 							</table>
 						</p:panel></td>
 				</tr>
 				<tr>
-					<td><h:panelGroup id="feaDef_pnlg">
-							<p:panel
-								rendered="#{dataSetRunManageBean.showfeatureDefectPanel}"
-								header="Feature ID: #{dataSetRunManageBean.selectedFeatureID}">
-								<table>
-									<tr style="vertical-align: top">
+					<td>
+						<!-- <p:dataTable
+							value="#{dataSetRunManageBean.dataSetRunBeansList}" var="dsr"
+							stickyHeader="true">
+							<p:columnGroup type="header">
+								<p:row>
+									<p:column rowspan="3" headerText="Data Set Details" />
+									<p:column colspan="5" headerText="Feature Details" />
 
-										<td><p:outputLabel for="fet_ph_run"
-												value="Feature run Phase :" /></td>
-										<td><p:selectOneMenu id="fet_ph_run" autoWidth="false"
-												value="#{dataSetRunManageBean.selectedFeaturePhase}"
-												style="width:100px">
-												<f:selectItem itemLabel="Select Feature Phase" itemValue=""
-													noSelectionOption="true" />
-												<f:selectItems
-													value="#{dataSetRunManageBean.featurePhaseDropDown}"
-													var="fpItems" itemValue="#{fpItems.catdata}"
-													itemLabel="#{fpItems.catdata}" />
-											</p:selectOneMenu></td>
+								</p:row>
+								<p:row>
+									<p:column colspan="2" headerText="Feature" />
+									<p:column colspan="3" headerText="Defects" />
+								</p:row>
+								<p:row>
+									<p:column headerText="Feature Id" />
+									<p:column headerText="Feature Run Status" />
+									<p:column headerText="HPQC ID" />
+									<p:column headerText="Status" />
+									<p:column headerText="Severity" />
+								</p:row>
+							</p:columnGroup>
+						</p:dataTable> --> <h:panelGroup id="dats_pnlg">
+							<p:dataTable value="#{dataSetRunManageBean.dataSetRunBeansList}"
+								var="dsr" stickyHeader="true" rowStyleClass="row_style" >
 
-										<td><h:outputLabel value="Run Status" for="testRes_dropD" /></td>
-										<td><p:selectOneMenu id="testRes_dropD" autoWidth="false"
-												value="#{dataSetRunManageBean.selectedTestPhase}"
-												style="width:100px">
+								<p:columnGroup type="header">
+									<p:row>
+										<p:column rowspan="2" colspan="2"
+											headerText="Data Set Details" width="50%" />
+										<p:column colspan="5" headerText="Feature Details" width="50%" />
 
-												<f:selectItem itemLabel="Select Result" itemValue=""
-													noSelectionOption="true" />
-												<f:selectItems
-													value="#{dataSetRunManageBean.testPhaseDropDown}"
-													var="lsItems" itemValue="#{lsItems.catdata}"
-													itemLabel="#{lsItems.catdata}" />
-											</p:selectOneMenu></td>
+									</p:row>
+									<p:row>
 
-										<td><h:outputLabel value="Run Status" for="feaRes_dropD" /></td>
-										<td><p:selectOneMenu id="feaRes_dropD" autoWidth="false"
-												value="#{dataSetRunManageBean.selectedFeatureResult}"
-												style="width:100px">
-												<p:ajax listener="#{dataSetRunManageBean.onResultChange}"
-													event="change" update="def_grp" />
-												<f:selectItem itemLabel="Select Result" itemValue=""
-													noSelectionOption="true" />
-												<f:selectItems
-													value="#{dataSetRunManageBean.featureStatusDropDown}"
-													var="lsItems" itemValue="#{lsItems.catdata}"
-													itemLabel="#{lsItems.catdata}" />
-											</p:selectOneMenu></td>
-										<td><h:panelGroup id="def_grp">
-												<p:commandButton value="Add Defects"
-													action="#{dataSetRunManageBean.addMoreDefects}"
-													update="new-def_grp new_table"
-													disabled="#{!(dataSetRunManageBean.showDefectGroup)}"
-													type="submit" />
-											</h:panelGroup></td>
-										<td><h:panelGroup id="new-def_grp">
-												<h:dataTable id="new_table" var="def"
-													value="#{dataSetRunManageBean.defectaddingList}">
-													<h:column>
-														<h:outputLabel value="Defect ID: " />
-														<h:inputText value="#{def.HPQCID}" />
-													</h:column>
-												</h:dataTable>
+										<p:column colspan="2" headerText="Feature" />
+										<p:column colspan="3" headerText="Defects" />
+									</p:row>
+									<p:row>
+										<p:column headerText="Data Set" />
+										<p:column headerText="Accounts" />
+										<p:column headerText="Feature Id" />
+										<p:column headerText="Feature Run Status" />
+										<p:column headerText="HPQC ID" />
+										<p:column headerText="Status" />
+										<p:column headerText="Severity" />
+									</p:row>
+								</p:columnGroup>
+								<p:column headerText="DataSetDetails">
+									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid"
+										rows="6">
+										<table>
+											<tr>
+												<td><h:outputLabel value="DataSet Name" /></td>
+												<td><h:outputText
+														value="#{dssr.datasetMaster.datasetname}" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="DataSet Status" /></td>
+												<td><h:outputText value="#{dssr.datasetRun.runstatus}" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="DataSet Run By" /></td>
+												<td><h:outputText value="#{dsr.datasetRun.runby}" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="DataSet Run Time" /></td>
+												<td><h:outputText value="#{dssr.datasetRun.runtime}" /></td>
+											</tr>
+										</table>
+									</p:dataGrid>
+								</p:column>
+								<p:column headerText="Accounts">
+									<h:dataTable value="#{dsr.datasetMaster.accountmasters}" rowClasses="transparent_col"
+										var="accn">
+										<h:column>
+											<h:outputText value="#{accn.accountname}" />
+										</h:column>
+									</h:dataTable>
+								</p:column>
+								<p:column headerText="Feature Run Details" colspan="5">
+									<h:dataTable value="#{dsr.featureForDataSetRunBeansList}" style="border: none;"  cellpadding="0" cellspacing="0"
+										var="fsr" columnClasses="column_1_style,column_2_style,column_3_style" >
+										<h:column>
+											<h:outputText value="#{fsr.featureMaster.featureid}" />
+										</h:column>
+										<h:column>
+											<h:outputText value="#{fsr.status}" />
+										</h:column>
+										<h:column >
+											<h:dataTable value="#{fsr.datasetRunDefectsList}" rendered="#{fsr.datasetRunDefectsList.size() gt 0}"
+											var="defs" style="border: none;"  cellpadding="0" cellspacing="0" columnClasses="transparent_col,transparent_col,transparent_col" rowClasses="transparent_col">
+												<h:column>
+													<h:outputText value="#{defs.hpqcdefectid}" />
+												</h:column>
+												<h:column>
+													<h:outputText value="#{defs.defectstatus}" />
+												</h:column>
+												<h:column>
+													<h:outputText value="#{defs.defectsevrity}" />
+												</h:column>
+											</h:dataTable>
+										</h:column>
+									</h:dataTable>
+								</p:column>
 
-											</h:panelGroup></td>
-									</tr>
-									<tr>
-										<td colspan="3"><p:commandButton
-												value="Save Feature Data"
-												actionListener="#{dataSetRunManageBean.saveFeatureData}"
-												type="submit" update="fea_tabl,feaDef_pnlg"></p:commandButton></td>
-									</tr>
-								</table>
-							</p:panel>
-						</h:panelGroup></td>
-				</tr>
-				<tr>
-					<td><h:panelGroup>
-							<p:dataTable value="#{dataSetRunManageBean.datasetRunsList}"
-								var="dsr">
-								<p:subTable value="#{dsr.featureruns}" var="fsr">
-									<p:column>
-										<h:outputText value="#{fsr.featuremaster.featureid}" />
-									</p:column>
-								</p:subTable>
 							</p:dataTable>
-						</h:panelGroup></td>
+						</h:panelGroup>
+					</td>
 				</tr>
 			</table>
 		</h:form>
