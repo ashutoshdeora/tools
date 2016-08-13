@@ -37,6 +37,9 @@ public class DatasetMaster implements Serializable {
 
 	@Column(nullable=false, length=40)
 	private String updatedby;
+	
+	@Transient
+	private String selectedDataSetEvent;
 
 	//bi-directional many-to-one association to DatasetAccountHistory
 	@OneToMany(mappedBy="datasetmaster")
@@ -65,6 +68,9 @@ public class DatasetMaster implements Serializable {
 	public DatasetMaster() {
 	}
 
+	public DatasetMaster(String selectedValue){
+		this.selectedDataSetEvent = selectedValue;
+	}
 	public long getDatasetid() {
 		return this.datasetid;
 	}
@@ -223,6 +229,20 @@ public class DatasetMaster implements Serializable {
 
 	public void setFeaturemasters(List<FeatureMaster> featuremasters) {
 		this.featuremasters = featuremasters;
+	}
+
+	/**
+	 * @return the selectedDataSetEvent
+	 */
+	public String getSelectedDataSetEvent() {
+		return selectedDataSetEvent;
+	}
+
+	/**
+	 * @param selectedDataSetEvent the selectedDataSetEvent to set
+	 */
+	public void setSelectedDataSetEvent(String selectedDataSetEvent) {
+		this.selectedDataSetEvent = selectedDataSetEvent;
 	}
 
 }

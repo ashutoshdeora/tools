@@ -9,15 +9,15 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 
 import com.ibm.entity.DatasetMaster;
-import com.ibm.managedBean.DataSetRunManageBean;
 
 @FacesConverter("dataSetConverter")
 public class DataSetConverter implements Converter{
 	public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if(value != null && value.trim().length() > 0) {
             try {
-            	DataSetRunManageBean service = (DataSetRunManageBean) fc.getExternalContext().getApplicationMap().get("dataSetRunManageBean");
-                return service.getDatasetmastersList().get(Integer.parseInt(value));
+            	
+                return new DatasetMaster(value);
+                
             } catch(NumberFormatException e) {
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid theme."));
             }

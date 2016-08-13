@@ -20,38 +20,27 @@
 
 							<table style="width: 100%; border-spacing: 0;">
 								<tr style="vertical-align: top;">
-									<td>
+									<td width="55%">
 										<table>
-											<tr>
-												<td width="30%"><p:outputLabel for="dataSet_dropD"
-														value="Data Set " /></td>
-												<td><p:selectOneMenu id="dataSet_dropD"
-														autoWidth="false"
-														value="#{dataSetRunManageBean.selectedDataSet}"
-														style="width:250px;">
-														<p:ajax listener="#{dataSetRunManageBean.onDataSetChange}"
-															update="acc_tbl,fea_tabl" />
-														<f:selectItem itemLabel="Select Data Set" itemValue=""
-															noSelectionOption="true" />
-														<f:selectItems
-															value="#{dataSetRunManageBean.datasetmastersList}"
-															var="dsItems" itemValue="#{dsItems.datasetid}"
-															itemLabel="#{dsItems.datasetname}" />
-													</p:selectOneMenu></td>
-											</tr>
+
 											<tr>
 												<td><p:outputLabel value="Pojo:" for="themePojo" /></td>
-												<td><p:autoComplete id="themePojo" 
-														value="#{dataSetRunManageBean.masterForDropDown}"
-														completeMethod="#{dataSetRunManageBean.completeTheme}"
+												<td><p:autoComplete id="themePojo" style="width:560px;"
+														autoHighlight="true" inputStyle="width:560px;"
+														value="#{dataSetRunManageBean.masterRecordFromsuggestion}"
+														completeMethod="#{dataSetRunManageBean.completeDataset}"
 														var="theme" itemLabel="#{theme.datasetname}"
 														itemValue="#{theme}" converter="dataSetConverter"
-														forceSelection="true" /></td>
+														forceSelection="true">
+														<p:ajax event="itemSelect"
+															listener="#{dataSetRunManageBean.onDataSetChange}"
+															update="acc_tbl,fea_tabl" />
+													</p:autoComplete></td>
 											</tr>
 											<tr>
 												<td><h:outputLabel value="Comments for Run"
 														for="commentsText" /></td>
-												<td><p:inputText id="commentsText" style="width:260px;"
+												<td><p:inputText id="commentsText" style="width:560px;"
 														value="#{dataSetRunManageBean.testScriptComments}" /></td>
 											</tr>
 
@@ -62,7 +51,7 @@
 												<td><p:selectOneMenu id="dataSetPh_dropD"
 														autoWidth="false"
 														value="#{dataSetRunManageBean.selectedDataSetphase}"
-														style="width:250px;">
+														style="width:550px;">
 
 														<f:selectItem itemLabel="Select Data Set" itemValue=""
 															noSelectionOption="true" />
@@ -188,8 +177,7 @@
 						</p:panel></td>
 				</tr>
 				<tr>
-					<td>
-						 <h:panelGroup id="dats_pnlg">
+					<td><h:panelGroup id="dats_pnlg">
 							<p:dataTable value="#{dataSetRunManageBean.dataSetRunBeansList}"
 								var="dsr" stickyHeader="true" rowStyleClass="row_style">
 
@@ -216,8 +204,8 @@
 									</p:row>
 								</p:columnGroup>
 								<p:column headerText="DataSetDetails">
-									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid" styleClass="grid_style"
-										rows="6">
+									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid"
+										styleClass="grid_style" rows="6">
 										<table>
 											<tr>
 												<td><h:outputLabel value="DataSet Name" /></td>
@@ -235,6 +223,12 @@
 											<tr>
 												<td><h:outputLabel value="DataSet Run Time" /></td>
 												<td><h:outputText value="#{dssr.datasetRun.runtime}" /></td>
+											</tr>
+											<tr>
+												<td colspan="2"><p:commandButton
+														value="Ready For Re-Execution"
+														actionListener="#{dataSetRunManageBean.reExecuteDataSet}"
+														type="submit" rendered="true" /></td>
 											</tr>
 										</table>
 									</p:dataGrid>
@@ -280,8 +274,7 @@
 								</p:column>
 
 							</p:dataTable>
-						</h:panelGroup>
-					</td>
+						</h:panelGroup></td>
 				</tr>
 			</table>
 		</h:form>

@@ -175,18 +175,21 @@ ul.tab li a:focus, .active {
 
 .column_1_style{
 	border: 1px solid transparent;
+	text-align: center;
 }
 
 .column_2_style{
-	
+	text-align: center;
 }
 
 .column_3_style{
-	width: 57%
+	width: 57%;
+	text-align: center;
 }
 
 .transparent_col{
 	border: 1px solid transparent!important;
+	text-align: center;
 }
 
 .row_style{

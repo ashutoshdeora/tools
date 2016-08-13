@@ -17,6 +17,7 @@ public class DataSetRunBean implements Serializable{
 	private DatasetRun datasetRun;
 	private DatasetMaster datasetMaster;
 	private List<FeatureForDataSetRunBean> featureForDataSetRunBeansList;
+	private boolean readyForReExecute;
 	/**
 	 * @return the datasetRun
 	 */
@@ -53,6 +54,18 @@ public class DataSetRunBean implements Serializable{
 	 */
 	public void setFeatureForDataSetRunBeansList(List<FeatureForDataSetRunBean> featureForDataSetRunBeansList) {
 		this.featureForDataSetRunBeansList = featureForDataSetRunBeansList;
+	}
+	/**
+	 * @return the readyForReExecute
+	 */
+	public boolean isReadyForReExecute() {
+		return readyForReExecute;
+	}
+	/**
+	 * @param readyForReExecute the readyForReExecute to set
+	 */
+	public void setReadyForReExecute(boolean readyForReExecute) {
+		this.readyForReExecute = readyForReExecute;
 	}
 	
 	

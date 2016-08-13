@@ -19,6 +19,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.SelectEvent;
 
 import com.ibm.entity.AccountMaster;
 import com.ibm.entity.AccountRun;
@@ -80,7 +81,7 @@ public class DataSetRunManageBean implements Serializable {
 	private FeatureMaster selecetdFeature;
 	private String selectedfeature;
 	private String selectedAccount;
-	private String selectedDataSet;
+	//private String selectedDataSet;
 	private String testScriptComments;
 	private String selectedDataSetphase;
 	private String selectedFeatureResult;
@@ -90,7 +91,7 @@ public class DataSetRunManageBean implements Serializable {
 	private boolean tablePermission;
 	private boolean panelPermission;
 	private boolean showfeatureDefectPanel;
-	private DatasetMaster masterForDropDown;
+	private DatasetMaster masterRecordFromsuggestion;
 
 	@PostConstruct
 	private void init() {
@@ -179,11 +180,13 @@ public class DataSetRunManageBean implements Serializable {
 		System.out.println(defectaddingList.size());
 	}
 
-	public void onDataSetChange() {
+	public void onDataSetChange(SelectEvent event) {
+		masterRecordFromsuggestion = (DatasetMaster) event.getObject();
 		accountmastersList = new ArrayList<AccountMaster>();
 		featuremastersList = new ArrayList<FeatureMaster>();
 		for (DatasetMaster datasetMaster : datasetmastersList) {
-			if (selectedDataSet.equalsIgnoreCase(String.valueOf(datasetMaster.getDatasetid()))) {
+			if (getMasterRecordFromsuggestion().getSelectedDataSetEvent().equalsIgnoreCase(datasetMaster.getDatasetname())) {
+				setMasterRecordFromsuggestion(datasetMaster);
 				accountmastersList = datasetMaster.getAccountmasters();
 				featuremastersList = datasetMaster.getFeaturemasters();
 				FeatureRunModelBean bean = null;
@@ -283,7 +286,7 @@ public class DataSetRunManageBean implements Serializable {
         return results;
     }
      
-    public List<DatasetMaster> completeTheme(String query) {
+    public List<DatasetMaster> completeDataset(String query) {
         List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
         for (int i = 0; i < datasetmastersList.size(); i++) {
             String dataSetname = datasetmastersList.get(i).getDatasetname();
@@ -294,6 +297,10 @@ public class DataSetRunManageBean implements Serializable {
         return tempList;
     }
 
+    
+    public void reExecuteDataSet(){
+    	
+    }
 	private boolean validateWithRest(ArrayList<String> defList) {
 		// TODO Auto-generated method stub
 		return true;
@@ -317,14 +324,8 @@ public class DataSetRunManageBean implements Serializable {
 				datasetRun.setRunby("user");
 				datasetRun.setRunphase(selectedDataSetphase);
 				datasetRun.setReadyforrun(READYFORRERUNYES);
-
-				for (DatasetMaster datasetMaster : datasetmastersList) {
-					if (selectedDataSet.equalsIgnoreCase(String.valueOf(datasetMaster.getDatasetid()))) {
-						datasetRun.setDatasetmaster(datasetMaster);
-						break;
-					}
-				}
-
+				datasetRun.setDatasetmaster(getMasterRecordFromsuggestion());
+				
 				// calculate run status for dataset.
 				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
 					for (FeatureRunModelBean bean : featureRunModelBeansList) {
@@ -564,20 +565,6 @@ public class DataSetRunManageBean implements Serializable {
 		this.selectedAccount = selectedAccount;
 	}
 
-	/**
-	 * @return the selectedDataSet
-	 */
-	public String getSelectedDataSet() {
-		return selectedDataSet;
-	}
-
-	/**
-	 * @param selectedDataSet
-	 *            the selectedDataSet to set
-	 */
-	public void setSelectedDataSet(String selectedDataSet) {
-		this.selectedDataSet = selectedDataSet;
-	}
 
 	/**
 	 * @return the tablePermission
@@ -864,18 +851,20 @@ public class DataSetRunManageBean implements Serializable {
 		this.dataSetRunBeansList = dataSetRunBeansList;
 	}
 
+	
+
 	/**
-	 * @return the masterForDropDown
+	 * @return the masterRecordFromsuggestion
 	 */
-	public DatasetMaster getMasterForDropDown() {
-		return masterForDropDown;
+	public DatasetMaster getMasterRecordFromsuggestion() {
+		return masterRecordFromsuggestion;
 	}
 
 	/**
-	 * @param masterForDropDown the masterForDropDown to set
+	 * @param masterRecordFromsuggestion the masterRecordFromsuggestion to set
 	 */
-	public void setMasterForDropDown(DatasetMaster masterForDropDown) {
-		this.masterForDropDown = masterForDropDown;
+	public void setMasterRecordFromsuggestion(DatasetMaster masterRecordFromsuggestion) {
+		this.masterRecordFromsuggestion = masterRecordFromsuggestion;
 	}
 
 }
