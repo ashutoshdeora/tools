@@ -198,4 +198,21 @@ ul.tab li a:focus, .active {
 
 .grid_style .ui-widget-content {
 	border: 1px solid transparent!important;
+	background: transparent none repeat scroll 0 0;
+}
+
+.row_status_style_failed {
+	background-color: #ED6F82!important;
+}
+
+.row_status_style_passed{
+	background-color: #A4DAFC!important;
+}
+
+.row_status_style_rrdy{
+	background-color: #6FED80!important;
+}
+
+.defect_severity_crit_code {
+	background-color:#FF0000!important;
 }

@@ -3,7 +3,9 @@ package com.ibm.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.ibm.entity.DatasetRunDefect;
 import com.ibm.entity.FeatureMaster;
+import com.ibm.entity.FeatureRun;
 
 public class FeatureRunModelBean implements Serializable{
 	
@@ -22,6 +24,10 @@ public class FeatureRunModelBean implements Serializable{
 	private String inputDefects;
 	private String defectsData;
 	private List<String> defectList;
+	private List<DatasetRunDefect> defects;
+	private List<FeatureRun> featureRuns;
+	private int featureRunCount ;
+	
 	/**
 	 * @return the featureSetId
 	 */
@@ -153,6 +159,42 @@ public class FeatureRunModelBean implements Serializable{
 	 */
 	public void setDefectList(List<String> defectList) {
 		this.defectList = defectList;
+	}
+	/**
+	 * @return the defects
+	 */
+	public List<DatasetRunDefect> getDefects() {
+		return defects;
+	}
+	/**
+	 * @param defects the defects to set
+	 */
+	public void setDefects(List<DatasetRunDefect> defects) {
+		this.defects = defects;
+	}
+	/**
+	 * @return the featureRuns
+	 */
+	public List<FeatureRun> getFeatureRuns() {
+		return featureRuns;
+	}
+	/**
+	 * @param featureRuns the featureRuns to set
+	 */
+	public void setFeatureRuns(List<FeatureRun> featureRuns) {
+		this.featureRuns = featureRuns;
+	}
+	/**
+	 * @return the featureRunCount
+	 */
+	public int getFeatureRunCount() {
+		return featureRunCount;
+	}
+	/**
+	 * @param featureRunCount the featureRunCount to set
+	 */
+	public void setFeatureRunCount(int featureRunCount) {
+		this.featureRunCount = featureRunCount;
 	}
 	
 

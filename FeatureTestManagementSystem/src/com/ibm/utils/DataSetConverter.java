@@ -10,7 +10,7 @@ import javax.faces.convert.FacesConverter;
 
 import com.ibm.entity.DatasetMaster;
 
-@FacesConverter("dataSetConverter")
+
 public class DataSetConverter implements Converter{
 	public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if(value != null && value.trim().length() > 0) {

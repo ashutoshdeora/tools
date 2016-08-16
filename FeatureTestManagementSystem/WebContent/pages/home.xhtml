@@ -179,7 +179,11 @@
 				<tr>
 					<td><h:panelGroup id="dats_pnlg">
 							<p:dataTable value="#{dataSetRunManageBean.dataSetRunBeansList}"
-								var="dsr" stickyHeader="true" rowStyleClass="row_style">
+								var="dsr" stickyHeader="true" rowStyleClass="row_style"
+								rows="10" paginator="true" rowIndexVar="rowIndex"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="10,20,50"
+								tableStyleClass="datatable_styles">
 
 								<p:columnGroup type="header">
 									<p:row>
@@ -203,9 +207,11 @@
 										<p:column headerText="Severity" />
 									</p:row>
 								</p:columnGroup>
-								<p:column headerText="DataSetDetails">
+								<p:column headerText="DataSetDetails"
+									styleClass="#{dsr.styleClassForDataSetStatus}">
 									<p:dataGrid value="#{dsr}" var="dssr" columns="1" layout="grid"
-										styleClass="grid_style" rows="6">
+										styleClass="grid_style #{dsr.styleClassForDataSetStatus}"
+										rows="6">
 										<table>
 											<tr>
 												<td><h:outputLabel value="DataSet Name" /></td>
@@ -228,18 +234,23 @@
 												<td colspan="2"><p:commandButton
 														value="Ready For Re-Execution"
 														actionListener="#{dataSetRunManageBean.reExecuteDataSet}"
-														type="submit" rendered="true" /></td>
+														type="submit" rendered="true">
+														<f:attribute name="selDsrb" value="#{dssr}" />
+
+														<f:setPropertyActionListener value="#{dssr}"
+															target="#{dataSetRunManageBean.selectedDataSetRunBean}" />
+													</p:commandButton></td>
 											</tr>
 										</table>
 									</p:dataGrid>
 								</p:column>
 								<p:column headerText="Accounts">
-									<!-- <h:dataTable value="#{dsr.datasetMaster.accountmasters}"
+									<h:dataTable value="#{dsr.datasetMaster.accountmasters}"
 										rowClasses="transparent_col" var="accn">
 										<h:column>
 											<h:outputText value="#{accn.accountname}" />
 										</h:column>
-									</h:dataTable> -->
+									</h:dataTable>
 								</p:column>
 								<p:column headerText="Feature Run Details" colspan="5">
 									<h:dataTable value="#{dsr.featureForDataSetRunBeansList}"
@@ -247,7 +258,12 @@
 										var="fsr"
 										columnClasses="column_1_style,column_2_style,column_3_style">
 										<h:column>
-											<h:outputText value="#{fsr.featureMaster.featureid}" />
+											<p:link outcome="/pages/featurespage.xhtml"
+												value="#{fsr.featureMaster.featureset}"
+												styleClass="anchor_style">
+												<f:param name="selectedFeatureId"
+													value="#{fsr.featureMaster.featureset}" />
+											</p:link>
 										</h:column>
 										<h:column>
 											<h:outputText value="#{fsr.status}" />
@@ -272,7 +288,6 @@
 										</h:column>
 									</h:dataTable>
 								</p:column>
-
 							</p:dataTable>
 						</h:panelGroup></td>
 				</tr>

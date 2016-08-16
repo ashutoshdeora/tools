@@ -58,4 +58,12 @@
 			<redirect />
 		</navigation-case>
 	</navigation-rule>
+
+	<converter>
+        <description>AutoComplete converter</description>
+        <converter-id>dataSetConverter</converter-id>
+        <converter-class>
+        com.ibm.utils.DataSetConverter
+        </converter-class>
+    </converter>
 </faces-config>

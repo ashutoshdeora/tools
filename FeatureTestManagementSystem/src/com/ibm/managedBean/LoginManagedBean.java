@@ -33,7 +33,7 @@ public class LoginManagedBean implements Serializable {
 
 	public String checkuserloginWithRole() {
 		try {
-			List<UserDetail> userDetails = new ArrayList<>();
+			List<UserDetail> userDetails = new ArrayList<UserDetail>();
 			if (userDetails != null && userDetails.size() > 0) {
 				userName = userDetails.get(0).getUsername();
 				userRole = userDetails.get(0).getAccesslevel();

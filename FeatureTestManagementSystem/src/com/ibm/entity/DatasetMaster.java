@@ -40,6 +40,9 @@ public class DatasetMaster implements Serializable {
 	
 	@Transient
 	private String selectedDataSetEvent;
+	
+	@Transient
+	private List<DatasetRunDefect> defects;
 
 	//bi-directional many-to-one association to DatasetAccountHistory
 	@OneToMany(mappedBy="datasetmaster")
@@ -243,6 +246,20 @@ public class DatasetMaster implements Serializable {
 	 */
 	public void setSelectedDataSetEvent(String selectedDataSetEvent) {
 		this.selectedDataSetEvent = selectedDataSetEvent;
+	}
+
+	/**
+	 * @return the defects
+	 */
+	public List<DatasetRunDefect> getDefects() {
+		return defects;
+	}
+
+	/**
+	 * @param defects the defects to set
+	 */
+	public void setDefects(List<DatasetRunDefect> defects) {
+		this.defects = defects;
 	}
 
 }

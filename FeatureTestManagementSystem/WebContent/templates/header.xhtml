@@ -9,16 +9,15 @@
 		<h:outputLabel value="DataSet Run Management" styleClass="header_style_font"/>	
 	</center>
 	<h:form>
-		<h:panelGroup rendered="#{loginManagedBean.userName ne null}">
+		<h:panelGroup >
 			<table class="table_style">
 				<tr>
 					<td><ul class="tab">
 							<li ><a href="../pages/home.xhtml" class="tablinks">Home</a></li>
+							<li><a href="../pages/datasetpage.xhtml" class="tablinks">Data Set</a></li>
 							<li><a href="../pages/featurespage.xhtml" class="tablinks">Features</a></li>
-							<li><a href="../pages/accountspage.xhtml" class="tablinks">Account</a></li>
-							<li><a href="../pages/datasetpage.xhtml" class="tablinks">Data
-									Set</a></li>
 							<li><a href="../pages/defectspage.xhtml" class="tablinks">Defects</a></li>
+							<li><a href="../pages/accountspage.xhtml" class="tablinks">Account</a></li>
 						</ul></td>
 					<td><h:outputText value="#{loginManagedBean.userName}" /></td>
 					<td><p:commandButton action="#{loginManagedBean.logout}"

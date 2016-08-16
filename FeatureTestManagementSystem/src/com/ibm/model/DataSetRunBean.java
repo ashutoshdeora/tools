@@ -18,6 +18,7 @@ public class DataSetRunBean implements Serializable{
 	private DatasetMaster datasetMaster;
 	private List<FeatureForDataSetRunBean> featureForDataSetRunBeansList;
 	private boolean readyForReExecute;
+	private String styleClassForDataSetStatus;
 	/**
 	 * @return the datasetRun
 	 */
@@ -66,6 +67,18 @@ public class DataSetRunBean implements Serializable{
 	 */
 	public void setReadyForReExecute(boolean readyForReExecute) {
 		this.readyForReExecute = readyForReExecute;
+	}
+	/**
+	 * @return the styleClassForDataSetStatus
+	 */
+	public String getStyleClassForDataSetStatus() {
+		return styleClassForDataSetStatus;
+	}
+	/**
+	 * @param styleClassForDataSetStatus the styleClassForDataSetStatus to set
+	 */
+	public void setStyleClassForDataSetStatus(String styleClassForDataSetStatus) {
+		this.styleClassForDataSetStatus = styleClassForDataSetStatus;
 	}
 	
 	

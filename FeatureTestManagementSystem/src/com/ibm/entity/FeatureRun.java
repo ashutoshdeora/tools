@@ -2,6 +2,7 @@ package com.ibm.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 
 
 /**
@@ -36,6 +39,9 @@ public class FeatureRun implements Serializable {
 
 	@Column(nullable=false, length=20)
 	private String status;
+	
+	@Transient
+	private List<DatasetRunDefect> listofDefects;
 
 	public FeatureRun() {
 	}
@@ -70,6 +76,20 @@ public class FeatureRun implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	/**
+	 * @return the listofDefects
+	 */
+	public List<DatasetRunDefect> getListofDefects() {
+		return listofDefects;
+	}
+
+	/**
+	 * @param listofDefects the listofDefects to set
+	 */
+	public void setListofDefects(List<DatasetRunDefect> listofDefects) {
+		this.listofDefects = listofDefects;
 	}
 
 }

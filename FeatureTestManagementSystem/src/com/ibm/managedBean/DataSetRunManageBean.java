@@ -62,6 +62,11 @@ public class DataSetRunManageBean implements Serializable {
 	private static final String READYFORRERUNREADY = "R";
 	private static final String DATASETRUNPASS = "Passed";
 	private static final String DATASETRUNFAILED = "Failed";
+	private static final String DATASETRUNREADYFORRERUN = "Ready";
+
+	private static final String DATASETSTATUSCOLORPASSED = "row_status_style_passed";
+	private static final String DATASETSTATUSCOLORRRDY = "row_status_style_rrdy";
+	private static final String DATASETSTATUSCOLORFAILED = "row_status_style_failed";
 
 	private List<DatasetMaster> datasetmastersList;
 	private List<AccountMaster> accountmastersList;
@@ -75,13 +80,12 @@ public class DataSetRunManageBean implements Serializable {
 	private List<DefectBean> defectaddingList;
 	private List<FeatureRunModelBean> featureRunModelBeansList;
 	private List<DataSetRunBean> dataSetRunBeansList;
-	
 
 	private boolean showDefectGroup;
 	private FeatureMaster selecetdFeature;
 	private String selectedfeature;
 	private String selectedAccount;
-	//private String selectedDataSet;
+	// private String selectedDataSet;
 	private String testScriptComments;
 	private String selectedDataSetphase;
 	private String selectedFeatureResult;
@@ -92,6 +96,7 @@ public class DataSetRunManageBean implements Serializable {
 	private boolean panelPermission;
 	private boolean showfeatureDefectPanel;
 	private DatasetMaster masterRecordFromsuggestion;
+	private DataSetRunBean selectedDataSetRunBean;
 
 	@PostConstruct
 	private void init() {
@@ -159,7 +164,7 @@ public class DataSetRunManageBean implements Serializable {
 				datasetPhaseDropDown.add(masterData);
 			}
 		}
-		
+
 	}
 
 	public void onResultChange() {
@@ -277,30 +282,32 @@ public class DataSetRunManageBean implements Serializable {
 		FacesMessage msg = new FacesMessage("Row Edited", null);
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
-	
-	public List<String> completeText(String query) {
-        List<String> results = new ArrayList<String>();
-        for(int i = 0; i < 10; i++) {
-            results.add(query + i);
-        }
-        return results;
-    }
-     
-    public List<DatasetMaster> completeDataset(String query) {
-        List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
-        for (int i = 0; i < datasetmastersList.size(); i++) {
-            String dataSetname = datasetmastersList.get(i).getDatasetname();
-            if(dataSetname.toLowerCase().contains(query)) {
-            	tempList.add(datasetmastersList.get(i));
-            }
-        }
-        return tempList;
-    }
 
-    
-    public void reExecuteDataSet(){
-    	
-    }
+	public List<String> completeText(String query) {
+		List<String> results = new ArrayList<String>();
+		for (int i = 0; i < 10; i++) {
+			results.add(query + i);
+		}
+		return results;
+	}
+
+	public List<DatasetMaster> completeDataset(String query) {
+		List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
+		for (int i = 0; i < datasetmastersList.size(); i++) {
+			String dataSetname = datasetmastersList.get(i).getDatasetname();
+			if (dataSetname.toLowerCase().contains(query)) {
+				tempList.add(datasetmastersList.get(i));
+			}
+		}
+		return tempList;
+	}
+
+	public void reExecuteDataSet(ActionEvent event) {
+		DataSetRunBean myattr = (DataSetRunBean) event.getComponent().getAttributes().get("selDsrb");
+		System.out.println(myattr.getDatasetRun().getDatasetrunid());
+
+	}
+
 	private boolean validateWithRest(ArrayList<String> defList) {
 		// TODO Auto-generated method stub
 		return true;
@@ -325,7 +332,7 @@ public class DataSetRunManageBean implements Serializable {
 				datasetRun.setRunphase(selectedDataSetphase);
 				datasetRun.setReadyforrun(READYFORRERUNYES);
 				datasetRun.setDatasetmaster(getMasterRecordFromsuggestion());
-				
+
 				// calculate run status for dataset.
 				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
 					for (FeatureRunModelBean bean : featureRunModelBeansList) {
@@ -429,12 +436,12 @@ public class DataSetRunManageBean implements Serializable {
 		List<DatasetRun> datasetRunsList = new ArrayList<DatasetRun>();
 		List<DatasetMaster> datasetMastersList = new ArrayList<DatasetMaster>();
 		List<FeatureRun> featureRuns = new ArrayList<FeatureRun>();
-		
+
 		List<FeatureForDataSetRunBean> featureForDataSetRunBeans = null;
-		List<DatasetRunDefect>  datasetRunDefectsList = null;
+		List<DatasetRunDefect> datasetRunDefectsList = null;
 		FeatureForDataSetRunBean bean = null;
 		entityManager.getTransaction().begin();
-		
+
 		datasetRunsList = entityManager.createNamedQuery("DatasetRun.findAll").getResultList();
 		DataSetRunBean dataSetRunBean = null;
 		for (DatasetRun datasetRun : datasetRunsList) {
@@ -443,10 +450,10 @@ public class DataSetRunManageBean implements Serializable {
 			featureRuns = entityManager.createQuery("select fr from FeatureRun fr where fr.datasetrunid = :datasetrunid")
 					.setParameter("datasetrunid", BigDecimal.valueOf(datasetRun.getDatasetrunid())).getResultList();
 			featureForDataSetRunBeans = new ArrayList<FeatureForDataSetRunBean>();
-			for(FeatureRun featureRun :featureRuns){
+			for (FeatureRun featureRun : featureRuns) {
 				datasetRunDefectsList = new ArrayList<DatasetRunDefect>();
-				datasetRunDefectsList =  entityManager.createQuery("select df from DatasetRunDefect df where df.featurerunid = :featurerunid")
-										.setParameter("featurerunid", BigDecimal.valueOf(featureRun.getFeaturerunid())).getResultList();
+				datasetRunDefectsList = entityManager.createQuery("select df from DatasetRunDefect df where df.featurerunid = :featurerunid")
+						.setParameter("featurerunid", BigDecimal.valueOf(featureRun.getFeaturerunid())).getResultList();
 				FeatureMaster featureMaster = (FeatureMaster) entityManager.createQuery("select fm from FeatureMaster fm where fm.featureid =:featureid")
 						.setParameter("featureid", featureRun.getFeaturemasterid().longValue()).getSingleResult();
 				bean = new FeatureForDataSetRunBean();
@@ -454,11 +461,24 @@ public class DataSetRunManageBean implements Serializable {
 				bean.setFeatureMaster(featureMaster);
 				bean.setFeaturerunid(featureRun.getFeaturerunid());
 				bean.setStatus(featureRun.getStatus());
-				featureForDataSetRunBeans.add(bean);					
+
+				featureForDataSetRunBeans.add(bean);
 			}
 			dataSetRunBean.setDatasetMaster(datasetRun.getDatasetmaster());
 			dataSetRunBean.setDatasetRun(datasetRun);
 			dataSetRunBean.setFeatureForDataSetRunBeansList(featureForDataSetRunBeans);
+			if (dataSetRunBean.getDatasetRun().getRunstatus().equalsIgnoreCase(DATASETRUNFAILED)) {
+				dataSetRunBean.setStyleClassForDataSetStatus(DATASETSTATUSCOLORFAILED);
+			} else if (dataSetRunBean.getDatasetRun().getRunstatus().equalsIgnoreCase(DATASETRUNPASS)) {
+				dataSetRunBean.setStyleClassForDataSetStatus(DATASETSTATUSCOLORPASSED);
+			} else {
+				dataSetRunBean.setStyleClassForDataSetStatus(DATASETSTATUSCOLORRRDY);
+			}
+			if (datasetRun.getReadyforrun().equalsIgnoreCase(READYFORRERUNYES)) {
+				dataSetRunBean.setReadyForReExecute(true);
+			} else {
+				dataSetRunBean.setReadyForReExecute(false);
+			}
 			dataSetRunBeansList.add(dataSetRunBean);
 		}
 		entityManager.getTransaction().commit();
@@ -564,7 +584,6 @@ public class DataSetRunManageBean implements Serializable {
 	public void setSelectedAccount(String selectedAccount) {
 		this.selectedAccount = selectedAccount;
 	}
-
 
 	/**
 	 * @return the tablePermission
@@ -851,8 +870,6 @@ public class DataSetRunManageBean implements Serializable {
 		this.dataSetRunBeansList = dataSetRunBeansList;
 	}
 
-	
-
 	/**
 	 * @return the masterRecordFromsuggestion
 	 */
@@ -861,10 +878,26 @@ public class DataSetRunManageBean implements Serializable {
 	}
 
 	/**
-	 * @param masterRecordFromsuggestion the masterRecordFromsuggestion to set
+	 * @param masterRecordFromsuggestion
+	 *            the masterRecordFromsuggestion to set
 	 */
 	public void setMasterRecordFromsuggestion(DatasetMaster masterRecordFromsuggestion) {
 		this.masterRecordFromsuggestion = masterRecordFromsuggestion;
+	}
+
+	/**
+	 * @return the selectedDataSetRunBean
+	 */
+	public DataSetRunBean getSelectedDataSetRunBean() {
+		return selectedDataSetRunBean;
+	}
+
+	/**
+	 * @param selectedDataSetRunBean
+	 *            the selectedDataSetRunBean to set
+	 */
+	public void setSelectedDataSetRunBean(DataSetRunBean selectedDataSetRunBean) {
+		this.selectedDataSetRunBean = selectedDataSetRunBean;
 	}
 
 }
