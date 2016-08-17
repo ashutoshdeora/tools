@@ -80,25 +80,33 @@ public class DataSetRunManageBean implements Serializable {
 	private List<DefectBean> defectaddingList;
 	private List<FeatureRunModelBean> featureRunModelBeansList;
 	private List<DataSetRunBean> dataSetRunBeansList;
+	private List<AccountMaster> reExeAccountList;
+	private List<FeatureRunModelBean> reExecfeatureRunModelBeansList;
 
-	private boolean showDefectGroup;
+	private DatasetMaster masterRecordFromsuggestion;
+	private DatasetMaster selmasterRec;
+	private DataSetRunBean selectedDataSetRunBean;
 	private FeatureMaster selecetdFeature;
 	private String selectedfeature;
 	private String selectedAccount;
-	// private String selectedDataSet;
 	private String testScriptComments;
 	private String selectedDataSetphase;
 	private String selectedFeatureResult;
 	private String selectedTestPhase;
 	private String selectedFeatureID;
 	private String selectedFeaturePhase;
+	private String reDataSetName;
+	private String reDataSetPhase;
 	private boolean tablePermission;
 	private boolean panelPermission;
+	// need to be removed
 	private boolean showfeatureDefectPanel;
-	private DatasetMaster masterRecordFromsuggestion;
-	private DatasetMaster selmasterRec;
-	private DataSetRunBean selectedDataSetRunBean;
+	private boolean showDefectGroup;
+	private boolean showReExecution;
 
+	/**
+	 * populate all related data on pre-render of page.
+	 */
 	@PostConstruct
 	private void init() {
 		try {
@@ -117,75 +125,34 @@ public class DataSetRunManageBean implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<DatasetMaster> populateDataSet() {
-		EntityManager entityManager = getEntitymanagerFromCurrent();
-		entityManager.getTransaction().begin();
-
-		List<DatasetMaster> temp = new ArrayList<DatasetMaster>();
-		temp = entityManager.createNamedQuery("DatasetMaster.findAll").getResultList();
-
-		entityManager.getTransaction().commit();
-		entityManager.close();
-
+	/**
+	 * it is called on suggestion list of Dataset
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<DatasetMaster> completeDataset(String query) {
 		List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
-		for (int i = 1; i < temp.size(); i++) {
-
-			if (temp.get(i).getDatasetid() < 18) {
-				tempList.add(temp.get(i));
+		try {
+			for (int i = 0; i < datasetmastersList.size(); i++) {
+				String dataSetname = datasetmastersList.get(i).getDatasetname();
+				if (dataSetname.toLowerCase().contains(query)) {
+					tempList.add(datasetmastersList.get(i));
+				}
 			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Application/Data Error", exception.getLocalizedMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
-
 		return tempList;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void populateMasterData() {
-		EntityManager entityManager = getEntitymanagerFromCurrent();
-		entityManager.getTransaction().begin();
-
-		List<MasterData> masterDatas = new ArrayList<MasterData>();
-		masterDatas = entityManager.createQuery("select ms from MasterData ms").getResultList();
-
-		entityManager.getTransaction().commit();
-		entityManager.close();
-		featurePhaseDropDown = new ArrayList<MasterData>();
-		featureStatusDropDown = new ArrayList<MasterData>();
-		datasetPhaseDropDown = new ArrayList<MasterData>();
-		testPhaseDropDown = new ArrayList<MasterData>();
-		for (MasterData masterData : masterDatas) {
-
-			if (masterData.getCatagory().equalsIgnoreCase(FEATURECYCLE)) {
-				featurePhaseDropDown.add(masterData);
-			} else if (masterData.getCatagory().equalsIgnoreCase(FEATURETESTRESULT)) {
-				featureStatusDropDown.add(masterData);
-			} else if (masterData.getCatagory().equalsIgnoreCase(TESTPHASE)) {
-				testPhaseDropDown.add(masterData);
-			} else if (masterData.getCatagory().equalsIgnoreCase(DATASETPHASE)) {
-				datasetPhaseDropDown.add(masterData);
-			}
-		}
-
-	}
-
-	public void onResultChange() {
-		if ((selectedFeatureResult.equalsIgnoreCase(FAILED)) || (selectedFeatureResult.equalsIgnoreCase(PASSEDWWA))) {
-			showDefectGroup = true;
-
-		} else {
-			showDefectGroup = false;
-		}
-	}
-
-	public void addMoreDefects() {
-		System.out.println("I am called");
-		if (showDefectGroup) {
-			defectaddingList.add(new DefectBean());
-			showDefectGroup = true;
-		}
-		System.out.println(defectaddingList.size());
-	}
-
+	/**
+	 * on selection of data set , Accounts and feature list are to be populated.
+	 * 
+	 * @param event
+	 */
 	public void onDataSetChange(SelectEvent event) {
 		masterRecordFromsuggestion = (DatasetMaster) event.getObject();
 		accountmastersList = new ArrayList<AccountMaster>();
@@ -223,40 +190,12 @@ public class DataSetRunManageBean implements Serializable {
 
 	}
 
-	public void saveFeatureData() {
-		// insert data in feature run object level
-		for (FeatureRunModelBean bean : featureRunModelBeansList) {
-			if (bean.getFeatureSetId().equalsIgnoreCase(selectedFeatureID)) {
-				if (selectedFeaturePhase.length() > 0 && selectedFeatureResult.length() > 0 && selectedTestPhase.length() > 0) {
-					bean.setFeatureSetId(selectedFeatureID);
-					bean.setFeatureRunPhase(selectedFeaturePhase);
-					bean.setFeatureRunResult(selectedFeatureResult);
-					bean.setFeatureTestPhase(selectedTestPhase);
-					bean.setReadyForinsert(true);
-					// check for the feature result status
-					if ((selectedFeatureResult.equalsIgnoreCase(PASSEDWWA) || selectedFeatureResult.equalsIgnoreCase(FAILED)) && defectaddingList.size() > 0) {
-						bean.setDefectBeansList(defectaddingList);
-					}
-					// reset all drop downs and data as we have updated the bean
-
-				} else {
-					FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Cannot Save Data without required fields");
-					FacesContext.getCurrentInstance().addMessage(null, msg);
-					// error cannot save data without required field
-				}
-				defectaddingList = new ArrayList<DefectBean>();
-				selectedFeatureID = new String();
-				selectedFeaturePhase = new String();
-				selectedFeatureResult = new String();
-				selectedTestPhase = new String();
-				showDefectGroup = false;
-				break;
-			}
-		}
-		showDefectGroup = false;
-		showfeatureDefectPanel = false;
-	}
-
+	/**
+	 * it is called on editing of row . it saves data at bean level ,No db is
+	 * called.
+	 * 
+	 * @param event
+	 */
 	public void onRowEdit(RowEditEvent event) {
 		FeatureRunModelBean featureRunModelBean = (FeatureRunModelBean) event.getObject();
 
@@ -284,40 +223,11 @@ public class DataSetRunManageBean implements Serializable {
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
 
-	public List<String> completeText(String query) {
-		List<String> results = new ArrayList<String>();
-		for (int i = 0; i < 10; i++) {
-			results.add(query + i);
-		}
-		return results;
-	}
-
-	public List<DatasetMaster> completeDataset(String query) {
-		List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
-		for (int i = 0; i < datasetmastersList.size(); i++) {
-			String dataSetname = datasetmastersList.get(i).getDatasetname();
-			if (dataSetname.toLowerCase().contains(query)) {
-				tempList.add(datasetmastersList.get(i));
-			}
-		}
-		return tempList;
-	}
-
-	public void reExecuteDataSet(ActionEvent event) {
-		DataSetRunBean myattr = (DataSetRunBean) event.getComponent().getAttributes().get("selDsrb");
-		
-		
-		
-		
-		System.out.println(myattr.getDatasetRun().getDatasetrunid());
-
-	}
-
-	private boolean validateWithRest(ArrayList<String> defList) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
+	/**
+	 * nothing will happen if row is not edited
+	 * 
+	 * @param event
+	 */
 	public void onRowCancel(RowEditEvent event) {
 		FacesMessage msg = new FacesMessage("Edit Cancelled", null);
 		FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -333,6 +243,7 @@ public class DataSetRunManageBean implements Serializable {
 				DatasetRun datasetRun = new DatasetRun();
 
 				datasetRun.setRuntime(new Timestamp(new Date().getTime()));
+				// TODO login user to be inserted
 				datasetRun.setRunby("user");
 				datasetRun.setRunphase(selectedDataSetphase);
 				datasetRun.setReadyforrun(READYFORRERUNYES);
@@ -341,7 +252,7 @@ public class DataSetRunManageBean implements Serializable {
 				// calculate run status for dataset.
 				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
 					for (FeatureRunModelBean bean : featureRunModelBeansList) {
-						if (bean.getDefectList()!=null && bean.getDefectList().size() > 0) {
+						if (bean.getDefectList() != null && bean.getDefectList().size() > 0) {
 							datasetRunstatusfailed = true;
 							break;
 						}
@@ -425,12 +336,127 @@ public class DataSetRunManageBean implements Serializable {
 		}
 	}
 
-	public void addFeatureDefects(ActionEvent event) {
-		FeatureRunModelBean featureMaster = new FeatureRunModelBean();
-		featureMaster = (FeatureRunModelBean) event.getComponent().getAttributes().get("feature");
-		setShowfeatureDefectPanel(true);
-		System.out.println(featureMaster);
-		selectedFeatureID = featureMaster.getFeatureSetId();
+	public void reExecuteDataSet(ActionEvent event) {
+		DataSetRunBean bean = (DataSetRunBean) event.getComponent().getAttributes().get("selDsrb");
+		FeatureRunModelBean modelBean = null;
+		reExecfeatureRunModelBeansList = new ArrayList<FeatureRunModelBean>();
+		for (FeatureForDataSetRunBean runBean : bean.getFeatureForDataSetRunBeansList()) {
+			modelBean = new FeatureRunModelBean();
+			modelBean.setDefects(runBean.getDatasetRunDefectsList());
+			modelBean.setFeatureMaster(runBean.getFeatureMaster());
+			reExecfeatureRunModelBeansList.add(modelBean);
+		}
+		selectedDataSetRunBean = bean;
+		showReExecution = true;
+	}
+
+	public void saveReExecutedDataSetRun(ActionEvent event) {
+
+		try {
+			EntityManager entityManager = getEntitymanagerFromCurrent();
+			showfeatureDefectPanel = false;
+			if (selectedDataSetphase.length() > 0 && testScriptComments.trim().length() > 0) {
+				// first update the existing datasetRun and copy the data set id
+				// for parent id update
+
+				DatasetRun updatedOldDataSetRun = selectedDataSetRunBean.getDatasetRun();
+				DatasetRun mergedData = new DatasetRun();
+				updatedOldDataSetRun.setReadyforrun(READYFORRERUNNO);
+				entityManager.getTransaction().begin();
+				mergedData = entityManager.merge(updatedOldDataSetRun);
+				entityManager.getTransaction().commit();
+
+				// insert data in data set run
+				boolean datasetRunstatusfailed = false;
+				DatasetRun datasetRun = new DatasetRun();
+
+				datasetRun.setRuntime(new Timestamp(new Date().getTime()));
+				// TODO login user to be inserted
+				datasetRun.setRunby("user");
+
+				
+				datasetRun.setRunphase(selectedDataSetRunBean.getDatasetRun().getRunphase());
+				datasetRun.setReadyforrun(READYFORRERUNYES);
+				datasetRun.setDatasetmaster(selectedDataSetRunBean.getDatasetMaster());
+				datasetRun.setParentdatasetrunid(BigDecimal.valueOf(mergedData.getDatasetrunid()));
+
+				// calculate run status for dataset.
+				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
+					for (FeatureRunModelBean bean : featureRunModelBeansList) {
+						if (bean.getDefectList() != null && bean.getDefectList().size() > 0) {
+							datasetRunstatusfailed = true;
+							break;
+						}
+					}
+				}
+				if (datasetRunstatusfailed) {
+					datasetRun.setRunstatus(DATASETRUNFAILED);
+				} else {
+					datasetRun.setRunstatus(DATASETRUNPASS);
+				}
+
+				DatasetRun runmerged = new DatasetRun();
+				entityManager.getTransaction().begin();
+				runmerged = entityManager.merge(datasetRun);
+				entityManager.getTransaction().commit();
+
+				FeatureRun run = null;
+				FeatureRun featureRunMerged = null;
+				for (FeatureRunModelBean bean : featureRunModelBeansList) {
+					run = new FeatureRun();
+					featureRunMerged = new FeatureRun();
+					run.setDatasetrunid(BigDecimal.valueOf(runmerged.getDatasetrunid()));
+					run.setFeaturemasterid(BigDecimal.valueOf(bean.getFeaturemasterID()));
+					run.setStatus(bean.getFeatureRunResult());
+					entityManager.getTransaction().begin();
+					featureRunMerged = entityManager.merge(run);
+					entityManager.getTransaction().commit();
+
+					DatasetRunDefect defect = null;
+
+					if (bean.getDefectList() != null && bean.getDefectList().size() > 0) {
+						for (String defectBean : bean.getDefectList()) {
+							defect = new DatasetRunDefect();
+							defect.setFeaturerunid(BigDecimal.valueOf(featureRunMerged.getFeaturerunid()));
+							defect.setDefectsevrity("High");
+							defect.setDefectstatus(FAILED);
+							defect.setHpqcdefectid(new BigDecimal(defectBean));
+							DatasetRunDefectPK pk = new DatasetRunDefectPK();
+							pk.setDatasetrunid(runmerged.getDatasetrunid());
+							defect.setId(pk);
+							entityManager.getTransaction().begin();
+							entityManager.persist(defect);
+							entityManager.getTransaction().commit();
+
+						}
+
+					}
+				}
+
+				// now we have datasetRun ID
+
+				AccountRun accountRun = null;
+				for (AccountMaster accountMaster : accountmastersList) {
+					accountRun = new AccountRun();
+					accountRun.setAccountmasterid(BigDecimal.valueOf(accountMaster.getAccountid()));
+					accountRun.setDatasetrunid(BigDecimal.valueOf(runmerged.getDatasetrunid()));
+					entityManager.getTransaction().begin();
+					entityManager.persist(accountRun);
+					entityManager.getTransaction().commit();
+				}
+				entityManager.close();
+				populateDataSetRunData();
+			} else {
+				FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Cannot Save Data without required fields");
+				FacesContext.getCurrentInstance().addMessage(null, msg);
+				return;
+			}
+		} catch (Exception exception) {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Some Error");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			exception.printStackTrace();
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -488,6 +514,68 @@ public class DataSetRunManageBean implements Serializable {
 		}
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<DatasetMaster> populateDataSet() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+
+		List<DatasetMaster> temp = new ArrayList<DatasetMaster>();
+		temp = entityManager.createNamedQuery("DatasetMaster.findAll").getResultList();
+
+		entityManager.getTransaction().commit();
+		entityManager.close();
+
+		List<DatasetMaster> tempList = new ArrayList<DatasetMaster>();
+		for (int i = 1; i < temp.size(); i++) {
+
+			if (temp.get(i).getDatasetid() < 18) {
+				tempList.add(temp.get(i));
+			}
+		}
+
+		return tempList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void populateMasterData() {
+		EntityManager entityManager = getEntitymanagerFromCurrent();
+		entityManager.getTransaction().begin();
+
+		List<MasterData> masterDatas = new ArrayList<MasterData>();
+		masterDatas = entityManager.createQuery("select ms from MasterData ms").getResultList();
+
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		featurePhaseDropDown = new ArrayList<MasterData>();
+		featureStatusDropDown = new ArrayList<MasterData>();
+		datasetPhaseDropDown = new ArrayList<MasterData>();
+		testPhaseDropDown = new ArrayList<MasterData>();
+		for (MasterData masterData : masterDatas) {
+
+			if (masterData.getCatagory().equalsIgnoreCase(FEATURECYCLE)) {
+				featurePhaseDropDown.add(masterData);
+			} else if (masterData.getCatagory().equalsIgnoreCase(FEATURETESTRESULT)) {
+				featureStatusDropDown.add(masterData);
+			} else if (masterData.getCatagory().equalsIgnoreCase(TESTPHASE)) {
+				testPhaseDropDown.add(masterData);
+			} else if (masterData.getCatagory().equalsIgnoreCase(DATASETPHASE)) {
+				datasetPhaseDropDown.add(masterData);
+			}
+		}
+
+	}
+
+	/**
+	 * it will validate defect with HPQC via rest call .
+	 * 
+	 * @param defList
+	 * @return
+	 */
+	private boolean validateWithRest(ArrayList<String> defList) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	/**
@@ -903,6 +991,81 @@ public class DataSetRunManageBean implements Serializable {
 	 */
 	public void setSelectedDataSetRunBean(DataSetRunBean selectedDataSetRunBean) {
 		this.selectedDataSetRunBean = selectedDataSetRunBean;
+	}
+
+	/**
+	 * @return the showReExecution
+	 */
+	public boolean isShowReExecution() {
+		return showReExecution;
+	}
+
+	/**
+	 * @param showReExecution
+	 *            the showReExecution to set
+	 */
+	public void setShowReExecution(boolean showReExecution) {
+		this.showReExecution = showReExecution;
+	}
+
+	/**
+	 * @return the reExeAccountList
+	 */
+	public List<AccountMaster> getReExeAccountList() {
+		return reExeAccountList;
+	}
+
+	/**
+	 * @param reExeAccountList
+	 *            the reExeAccountList to set
+	 */
+	public void setReExeAccountList(List<AccountMaster> reExeAccountList) {
+		this.reExeAccountList = reExeAccountList;
+	}
+
+	/**
+	 * @return the reExecfeatureRunModelBeansList
+	 */
+	public List<FeatureRunModelBean> getReExecfeatureRunModelBeansList() {
+		return reExecfeatureRunModelBeansList;
+	}
+
+	/**
+	 * @param reExecfeatureRunModelBeansList
+	 *            the reExecfeatureRunModelBeansList to set
+	 */
+	public void setReExecfeatureRunModelBeansList(List<FeatureRunModelBean> reExecfeatureRunModelBeansList) {
+		this.reExecfeatureRunModelBeansList = reExecfeatureRunModelBeansList;
+	}
+
+	/**
+	 * @return the reDataSetName
+	 */
+	public String getReDataSetName() {
+		return reDataSetName;
+	}
+
+	/**
+	 * @param reDataSetName
+	 *            the reDataSetName to set
+	 */
+	public void setReDataSetName(String reDataSetName) {
+		this.reDataSetName = reDataSetName;
+	}
+
+	/**
+	 * @return the reDataSetPhase
+	 */
+	public String getReDataSetPhase() {
+		return reDataSetPhase;
+	}
+
+	/**
+	 * @param reDataSetPhase
+	 *            the reDataSetPhase to set
+	 */
+	public void setReDataSetPhase(String reDataSetPhase) {
+		this.reDataSetPhase = reDataSetPhase;
 	}
 
 }
