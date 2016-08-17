@@ -42,14 +42,14 @@ public class FeatureDataManagedBean implements Serializable {
 	private int number3 = 60;
 	private String[] rolloutOption;
 
-	
-
 	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
 
 	private List<FeatureRunModelBean> featurDataList;
+
 	public FeatureDataManagedBean() {
 
 	}
+
 	/**
 	 * 
 	 * @return entityManager
@@ -88,34 +88,34 @@ public class FeatureDataManagedBean implements Serializable {
 		featurDataList = new ArrayList<FeatureRunModelBean>();
 		List<FeatureMaster> list = new ArrayList<FeatureMaster>();
 		List<FeatureRun> featureRuns = new ArrayList<FeatureRun>();
-		List<DatasetRunDefect> defects = new ArrayList<DatasetRunDefect>();
+		List<FeatureRun> tempRuns = null;
+		List<DatasetRunDefect> defects = null;
 		List<DatasetRunDefect> defectsTemp = new ArrayList<DatasetRunDefect>();
 		list = entityManager.createQuery(" select fm from FeatureMaster fm").getResultList();
 		FeatureRunModelBean bean = null;
 		for (FeatureMaster master : list) {
+			tempRuns = new ArrayList<FeatureRun>();
 			bean = new FeatureRunModelBean();
-			if(master.getFeatureid()==9){
-				System.out.println(master.getFeatureid());
-			}
+
 			bean.setFeatureMaster(master);
 			featureRuns = entityManager.createQuery("select fr from FeatureRun fr where fr.featuremasterid = :featuremasterid")
 					.setParameter("featuremasterid", BigDecimal.valueOf(master.getFeatureid())).getResultList();
-			bean.setFeatureRuns(featureRuns);
 			defectsTemp = new ArrayList<DatasetRunDefect>();
 			if (featureRuns != null && featureRuns.size() > 0) {
 				for (FeatureRun run : featureRuns) {
 					defects = new ArrayList<DatasetRunDefect>();
 					defects = entityManager.createQuery("select df from DatasetRunDefect df where df.featurerunid = :featurerunid")
 							.setParameter("featurerunid", BigDecimal.valueOf(run.getFeaturerunid())).getResultList();
+					run.setListofDefects(defects);
+					tempRuns.add(run);
 					defectsTemp.addAll(defects);
 				}
 			}
 			bean.setDefects(defectsTemp);
 			bean.setFeatureRunCount(featureRuns.size());
-			bean.setFeatureRuns(featureRuns);
+			bean.setFeatureRuns(tempRuns);
 			featurDataList.add(bean);
 		}
-
 		entityManager.getTransaction().commit();
 		entityManager.close();
 
@@ -137,7 +137,7 @@ public class FeatureDataManagedBean implements Serializable {
 		FeatureRunModelBean bean = null;
 		for (FeatureMaster master : list) {
 			bean = new FeatureRunModelBean();
-			if(master.getFeatureid()==9){
+			if (master.getFeatureid() == 9) {
 				System.out.println(master.getFeatureid());
 			}
 			bean.setFeatureMaster(master);
@@ -214,14 +214,17 @@ public class FeatureDataManagedBean implements Serializable {
 	public void setNumber3(int number3) {
 		this.number3 = number3;
 	}
+
 	/**
 	 * @return the featurDataList
 	 */
 	public List<FeatureRunModelBean> getFeaturDataList() {
 		return featurDataList;
 	}
+
 	/**
-	 * @param featurDataList the featurDataList to set
+	 * @param featurDataList
+	 *            the featurDataList to set
 	 */
 	public void setFeaturDataList(List<FeatureRunModelBean> featurDataList) {
 		this.featurDataList = featurDataList;

@@ -1,8 +1,17 @@
 package com.ibm.hpqc;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class TestRestCallFromHPQC {
 
@@ -12,78 +21,60 @@ public class TestRestCallFromHPQC {
 
 	private RestConnector con;
 	
-	
-	
-	
+	public static final String HOST = "hpqcprod";
+	public static final String PORT = "8080";
+
+	public static final String USERNAME = "a099996";
+	public static final String PASSWORD = "MYname_3880";
+
+	public static final String DOMAIN = "DEFAULT";
+	public static final String PROJECT = "Unity_RentalProject";
+
 	public static void main(String[] args) throws Exception {
-		new TestRestCallFromHPQC().authenticateLoginLogoutExample(
-				"http://" + Constants.HOST + ":" + Constants.PORT + "/qcbin",
-				Constants.DOMAIN, Constants.PROJECT, Constants.USERNAME,
-				Constants.PASSWORD);
+		new TestRestCallFromHPQC().authenticateLoginLogoutExample();
 	}
 
-	public void authenticateLoginLogoutExample(final String serverUrl,
-			final String domain, final String project, String username,
-			String password) throws Exception {
+	public void authenticateLoginLogoutExample()
+			throws Exception {
 
-		RestConnector con = RestConnector.getInstance().init(new HashMap<String, String>(), serverUrl, domain, project);
-
-		TestRestCallFromHPQC example = new TestRestCallFromHPQC();
-		String authenticationPoint = example.isAuthenticated();
-		// now we login to previously returned URL.
-		Response loginResponse = example.login(authenticationPoint, username,password);
-		
+		String serverURL = "http://" + Constants.HOST + ":" + Constants.PORT + "/qcbin";
+		RestConnector con = RestConnector.getInstance().init(new HashMap<String, String>(), serverURL, DOMAIN, PROJECT);
+		String authenticationPoint = isAuthenticated();
+		Response loginResponse = login(authenticationPoint, USERNAME, PASSWORD);
 		Iterable<String> newCookies = loginResponse.getResponseHeaders().get("Set-Cookie");
-		
-			
-				String cookieString = null ;
-			for (String cookie : newCookies) {
-				cookieString = cookie;
-				break;
-			
+		String cookieString = null;
+		for (String cookie : newCookies) {
+			cookieString = cookie;
+			break;
+
 		}
-			
-			
-			Map<String, String> requestHeaders = new HashMap<String, String>();
-			requestHeaders.put("Content-Type", "application/xml");
-			requestHeaders.put("Accept", "application/xml");
-			requestHeaders.put("Set-Cookie",cookieString);
-			
-			String qcsessionurl = con.buildUrl("rest/site-session");
-			Response resp = con.httpPost(qcsessionurl, null, requestHeaders);
-			System.out.println(resp);
-			Iterable<String> QCSessionCookies = resp.getResponseHeaders().get("Set-Cookie");
-			String QCSessioncookieString = null ;
-			for (String cookie : QCSessionCookies) {
-				if(cookie.contains("QCSession")){
+		Map<String, String> requestHeaders = new HashMap<String, String>();
+		requestHeaders.put("Content-Type", "application/xml");
+		requestHeaders.put("Accept", "application/xml");
+		requestHeaders.put("Set-Cookie", cookieString);
+
+		String qcsessionurl = con.buildUrl("rest/site-session");
+		Response resp = con.httpPost(qcsessionurl, null, requestHeaders);
+		System.out.println(resp);
+		Iterable<String> QCSessionCookies = resp.getResponseHeaders().get("Set-Cookie");
+		String QCSessioncookieString = null;
+		for (String cookie : QCSessionCookies) {
+			if (cookie.contains("QCSession")) {
 				QCSessioncookieString = cookie;
-				break;}
-			
+				break;
+			}
+
 		}
-			
-			requestHeaders = new HashMap<String, String>();
-			requestHeaders.put("Content-Type", "application/xml");
-			requestHeaders.put("Accept", "application/xml");
-			String requesCookie = QCSessioncookieString + ";"+ cookieString;
-			//requestHeaders.put("Cookie",cookieString);
-			requestHeaders.put("Cookie",requesCookie);
-			
-			String urlOfResourceWeWantToRead = con.buildUrl("rest/domains/DEFAULT/projects/Unity_RentalProject/defects/13773??fields=");
-			Response serverResponse = con.httpGet(urlOfResourceWeWantToRead, null,requestHeaders);
-					
-			//System.out.println(serverResponse.toString());
-			//String xmlstringwithoutHtML =Jsoup.parse(serverResponse.toString()).text();
-			//String xmlstring = StringEscapeUtils.unescapeHtml4(xmlstringwithoutHtML);
-		//	System.out.println(xmlstringwithoutHtML);
-			//Entity entity = EntityMarshallingUtils.marshal(Entity.class,
-			//		StringEscapeUtils.unescapeHtml4(serverResponse.toString()));
-		//	System.out.println(entity);
-			//Gson gson =new GsonBuilder().setPrettyPrinting().create();
-			
-			//com.ibm.hpqc.json.model.Entity  entity = gson.fromJson(serverResponse.toString(), com.ibm.hpqc.json.model.Entity.class);
-		//	System.out.println(entity);
-			
-			
+
+		requestHeaders = new HashMap<String, String>();
+		requestHeaders.put("Content-Type", "application/xml");
+		requestHeaders.put("Accept", "application/xml");
+		String requesCookie = QCSessioncookieString + ";" + cookieString;
+		requestHeaders.put("Cookie", requesCookie);
+		String urlOfResourceWeWantToRead = con.buildUrl("rest/domains/DEFAULT/projects/Unity_RentalProject/defects/14370");
+		Response serverResponse = con.httpGet(urlOfResourceWeWantToRead, null, requestHeaders);
+		readString(serverResponse.toString());
+		
 
 	}
 
@@ -99,8 +90,7 @@ public class TestRestCallFromHPQC {
 	 *             authentication), where one must store the returned cookies
 	 *             for further use.
 	 */
-	public Response login(String loginUrl, String username, String password)
-			throws Exception {
+	public Response login(String loginUrl, String username, String password) throws Exception {
 
 		// create a string that lookes like:
 		// "Basic ((username:password)<as bytes>)<64encoded>"
@@ -126,16 +116,76 @@ public class TestRestCallFromHPQC {
 
 		String isAuthenticateUrl = con.buildUrl("rest/is-authenticated");
 		String ret;
-
 		Response response = con.httpGet(isAuthenticateUrl, null, null);
-
 		Iterable<String> authenticationHeader = response.getResponseHeaders().get("WWW-Authenticate");
-
 		String newUrl = authenticationHeader.iterator().next().split("=")[1];
 		newUrl = newUrl.replace("\"", "");
 		newUrl += "/authenticate";
 		ret = newUrl;
-
 		return ret;
+	}
+
+	public void readString(String xml) throws Exception, Exception {
+		// Get the DOM Builder Factory
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+		// Get the DOM Builder
+		DocumentBuilder builder = factory.newDocumentBuilder();
+
+		// Load and Parse the XML document
+		// document contains the complete XML as a Tree.
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+
+		Document document = builder.parse(is);
+
+		// Iterating through the nodes and extracting the data.
+		NodeList nodeList = document.getDocumentElement().getChildNodes();
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+
+			Node node = nodeList.item(i);
+			if (node instanceof Element) {
+				// fields
+				System.out.println(node.getNodeName());
+				System.out.println(node.getNodeValue());
+
+				NodeList childNodes = node.getChildNodes();
+				for (int j = 0; j < childNodes.getLength(); j++) {
+					Node cNode = childNodes.item(j);
+					// field
+					System.out.println(cNode.getNodeName());
+					System.out.println(cNode.getNodeValue());
+
+					for (int k = 0; k < cNode.getAttributes().getLength(); k++) {
+
+						//
+
+						System.out.print(cNode.getAttributes().item(k).getNodeValue());
+						System.out.println();
+						// field attribute and field value
+						if (cNode.getAttributes().item(k).getNodeValue().equalsIgnoreCase("dev-comments")
+								|| cNode.getAttributes().item(k).getNodeValue().equalsIgnoreCase("description")) {
+
+						} else {
+
+							NodeList list = cNode.getChildNodes();
+							for (int ll = 0; ll < list.getLength(); ll++) {
+								Node cnNode = list.item(ll);
+
+								NodeList cwn = cnNode.getChildNodes();
+								for (int jl = 0; jl < cwn.getLength(); jl++) {
+									System.out.print(cwn.item(jl).getNodeValue());
+									System.out.println();
+								}
+								System.out.println();
+							}
+						}
+					}
+
+				}
+			}
+
+		}
+
 	}
 }

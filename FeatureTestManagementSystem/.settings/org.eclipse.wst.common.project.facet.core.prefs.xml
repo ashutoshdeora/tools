@@ -9,4 +9,9 @@
       <attribute name="provider-id" value="wls-system-library-provider-jsf-2.1"/>
     </node>
   </facet>
+  <facet id="jpt.jaxb">
+    <node name="classgen">
+      <attribute name="package" value="com.ibm.xml.data"/>
+    </node>
+  </facet>
 </root>
