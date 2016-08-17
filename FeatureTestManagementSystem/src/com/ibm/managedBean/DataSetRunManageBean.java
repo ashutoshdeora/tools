@@ -96,6 +96,7 @@ public class DataSetRunManageBean implements Serializable {
 	private boolean panelPermission;
 	private boolean showfeatureDefectPanel;
 	private DatasetMaster masterRecordFromsuggestion;
+	private DatasetMaster selmasterRec;
 	private DataSetRunBean selectedDataSetRunBean;
 
 	@PostConstruct
@@ -191,7 +192,7 @@ public class DataSetRunManageBean implements Serializable {
 		featuremastersList = new ArrayList<FeatureMaster>();
 		for (DatasetMaster datasetMaster : datasetmastersList) {
 			if (getMasterRecordFromsuggestion().getSelectedDataSetEvent().equalsIgnoreCase(datasetMaster.getDatasetname())) {
-				setMasterRecordFromsuggestion(datasetMaster);
+				selmasterRec = datasetMaster;
 				accountmastersList = datasetMaster.getAccountmasters();
 				featuremastersList = datasetMaster.getFeaturemasters();
 				FeatureRunModelBean bean = null;
@@ -304,6 +305,10 @@ public class DataSetRunManageBean implements Serializable {
 
 	public void reExecuteDataSet(ActionEvent event) {
 		DataSetRunBean myattr = (DataSetRunBean) event.getComponent().getAttributes().get("selDsrb");
+		
+		
+		
+		
 		System.out.println(myattr.getDatasetRun().getDatasetrunid());
 
 	}
@@ -331,12 +336,12 @@ public class DataSetRunManageBean implements Serializable {
 				datasetRun.setRunby("user");
 				datasetRun.setRunphase(selectedDataSetphase);
 				datasetRun.setReadyforrun(READYFORRERUNYES);
-				datasetRun.setDatasetmaster(getMasterRecordFromsuggestion());
+				datasetRun.setDatasetmaster(selmasterRec);
 
 				// calculate run status for dataset.
 				if (featureRunModelBeansList != null && featureRunModelBeansList.size() > 0) {
 					for (FeatureRunModelBean bean : featureRunModelBeansList) {
-						if (bean.getDefectList().size() > 0) {
+						if (bean.getDefectList()!=null && bean.getDefectList().size() > 0) {
 							datasetRunstatusfailed = true;
 							break;
 						}

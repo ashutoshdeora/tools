@@ -24,7 +24,7 @@
 										<table>
 
 											<tr>
-												<td><p:outputLabel value="Pojo:" for="themePojo" /></td>
+												<td><p:outputLabel value="Data Set:" for="themePojo" /></td>
 												<td><p:autoComplete id="themePojo" style="width:560px;"
 														autoHighlight="true" inputStyle="width:560px;"
 														value="#{dataSetRunManageBean.masterRecordFromsuggestion}"
@@ -215,8 +215,12 @@
 										<table>
 											<tr>
 												<td><h:outputLabel value="DataSet Name" /></td>
-												<td><h:outputText
-														value="#{dssr.datasetMaster.datasetname}" /></td>
+												<td><p:link outcome="/pages/datasetpage.xhtml"
+														value=" #{dssr.datasetMaster.datasetname}"
+														styleClass="anchor_style">
+														<f:param name="selectedDataSetLocation"
+															value="#{dssr.datasetMaster.datasetid}" />
+													</p:link></td>
 											</tr>
 											<tr>
 												<td><h:outputLabel value="DataSet Status" /></td>
@@ -276,7 +280,13 @@
 												columnClasses="transparent_col,transparent_col,transparent_col"
 												rowClasses="transparent_col">
 												<h:column>
-													<h:outputText value="#{defs.hpqcdefectid}" />
+
+													<p:link outcome="/pages/defectspage.xhtml"
+														value="#{defs.hpqcdefectid}" styleClass="anchor_style">
+														<f:param name="selectedDefect"
+															value="#{defs.hpqcdefectid}" />
+													</p:link>
+
 												</h:column>
 												<h:column>
 													<h:outputText value="#{defs.defectstatus}" />

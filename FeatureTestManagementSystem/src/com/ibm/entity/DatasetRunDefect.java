@@ -2,12 +2,14 @@ package com.ibm.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -34,6 +36,9 @@ public class DatasetRunDefect implements Serializable {
 
 	@Column(nullable=false, precision=22)
 	private BigDecimal hpqcdefectid;
+	
+	@Transient
+	private List<DatasetRun> datasetRuns;
 
 	public DatasetRunDefect() {
 	}
@@ -77,5 +82,21 @@ public class DatasetRunDefect implements Serializable {
 	public void setHpqcdefectid(BigDecimal hpqcdefectid) {
 		this.hpqcdefectid = hpqcdefectid;
 	}
+
+	/**
+	 * @return the datasetRuns
+	 */
+	public List<DatasetRun> getDatasetRuns() {
+		return datasetRuns;
+	}
+
+	/**
+	 * @param datasetRuns the datasetRuns to set
+	 */
+	public void setDatasetRuns(List<DatasetRun> datasetRuns) {
+		this.datasetRuns = datasetRuns;
+	}
+
+	
 
 }
