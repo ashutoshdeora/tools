@@ -216,3 +216,19 @@ ul.tab li a:focus, .active {
 .defect_severity_crit_code {
 	background-color:#FF0000!important;
 }
+
+
+.custom_odd .ui-datatable-odd {
+	background: #FFFFFF none repeat scroll 0 0;
+	border: 1px solid;
+	color: #000000 !important;
+	font-family: verdana;
+}
+
+.custom_even.ui-datatable-even {
+	background: #E2D5E2 none repeat scroll 0 0;
+	border: 1px solid;
+	color: #000000 !important;
+	font-family: verdana !important;
+}
+

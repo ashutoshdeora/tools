@@ -13,14 +13,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class TestRestCallFromHPQC {
-
-	public TestRestCallFromHPQC() {
-		con = RestConnector.getInstance();
-	}
-
+public class RestCallToHPQC {
 	private RestConnector con;
-	
+
 	public static final String HOST = "hpqcprod";
 	public static final String PORT = "8080";
 
@@ -30,14 +25,13 @@ public class TestRestCallFromHPQC {
 	public static final String DOMAIN = "DEFAULT";
 	public static final String PROJECT = "Unity_RentalProject";
 
-	public static void main(String[] args) throws Exception {
-		new TestRestCallFromHPQC().authenticateLoginLogoutExample();
+	public RestCallToHPQC() {
+		con = RestConnector.getInstance();
 	}
 
-	public void authenticateLoginLogoutExample()
-			throws Exception {
+	public void callRestFromHPQCForDefect(String defectId) throws Exception {
 
-		String serverURL = "http://" + Constants.HOST + ":" + Constants.PORT + "/qcbin";
+		String serverURL = "http://" + HOST + ":" + PORT + "/qcbin";
 		RestConnector con = RestConnector.getInstance().init(new HashMap<String, String>(), serverURL, DOMAIN, PROJECT);
 		String authenticationPoint = isAuthenticated();
 		Response loginResponse = login(authenticationPoint, USERNAME, PASSWORD);
@@ -71,10 +65,9 @@ public class TestRestCallFromHPQC {
 		requestHeaders.put("Accept", "application/xml");
 		String requesCookie = QCSessioncookieString + ";" + cookieString;
 		requestHeaders.put("Cookie", requesCookie);
-		String urlOfResourceWeWantToRead = con.buildUrl("rest/domains/DEFAULT/projects/Unity_RentalProject/defects/14370");
+		String urlOfResourceWeWantToRead = con.buildUrl("rest/domains/DEFAULT/projects/Unity_RentalProject/defects/"+defectId);
 		Response serverResponse = con.httpGet(urlOfResourceWeWantToRead, null, requestHeaders);
 		readString(serverResponse.toString());
-		
 
 	}
 
@@ -126,40 +119,26 @@ public class TestRestCallFromHPQC {
 	}
 
 	public void readString(String xml) throws Exception, Exception {
-		// Get the DOM Builder Factory
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-		// Get the DOM Builder
 		DocumentBuilder builder = factory.newDocumentBuilder();
-
-		// Load and Parse the XML document
-		// document contains the complete XML as a Tree.
 		InputStream is = new ByteArrayInputStream(xml.getBytes());
-
 		Document document = builder.parse(is);
-
 		// Iterating through the nodes and extracting the data.
 		NodeList nodeList = document.getDocumentElement().getChildNodes();
 
 		for (int i = 0; i < nodeList.getLength(); i++) {
-
 			Node node = nodeList.item(i);
 			if (node instanceof Element) {
 				// fields
 				System.out.println(node.getNodeName());
 				System.out.println(node.getNodeValue());
-
 				NodeList childNodes = node.getChildNodes();
 				for (int j = 0; j < childNodes.getLength(); j++) {
 					Node cNode = childNodes.item(j);
 					// field
 					System.out.println(cNode.getNodeName());
 					System.out.println(cNode.getNodeValue());
-
 					for (int k = 0; k < cNode.getAttributes().getLength(); k++) {
-
-						//
-
 						System.out.print(cNode.getAttributes().item(k).getNodeValue());
 						System.out.println();
 						// field attribute and field value
@@ -167,11 +146,9 @@ public class TestRestCallFromHPQC {
 								|| cNode.getAttributes().item(k).getNodeValue().equalsIgnoreCase("description")) {
 
 						} else {
-
 							NodeList list = cNode.getChildNodes();
 							for (int ll = 0; ll < list.getLength(); ll++) {
 								Node cnNode = list.item(ll);
-
 								NodeList cwn = cnNode.getChildNodes();
 								for (int jl = 0; jl < cwn.getLength(); jl++) {
 									System.out.print(cwn.item(jl).getNodeValue());
