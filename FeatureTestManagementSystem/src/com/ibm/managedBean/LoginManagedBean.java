@@ -5,14 +5,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 
 import com.ibm.entity.UserDetail;
-
-
 
 @SessionScoped
 @ManagedBean(name = "loginManagedBean")
@@ -22,6 +22,10 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private boolean loggedIn;
+
+	@ManagedProperty(value = "#{navigationBean}")
+	private NavigationBean navigationBean;
 
 	public LoginManagedBean() {
 
@@ -31,17 +35,32 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 	private String password;
 	private String userRole;
 
+	@SuppressWarnings("unchecked")
 	public String checkuserloginWithRole() {
 		try {
 			List<UserDetail> userDetails = new ArrayList<UserDetail>();
+			EntityManager entityManager = getEntitymanagerFromCurrent();
+			entityManager.getTransaction().begin();
+			userDetails = entityManager
+					.createQuery(
+							"select ud from UserDetail ud where ud.username=:username")
+					.setParameter("username", userName).getResultList();
+
+			entityManager.getTransaction().commit();
+			entityManager.close();
+
 			if (userDetails != null && userDetails.size() > 0) {
 				userName = userDetails.get(0).getUsername();
 				userRole = userDetails.get(0).getAccesslevel();
-				return "loggedIn";
-			} else {
-				// no record found
-				// set messages
+				loggedIn = true;
+				return navigationBean.redirectToWelcome();
 			}
+			FacesMessage msg = new FacesMessage("Login error!", "ERROR MSG");
+			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+
+			// To to login page
+			return navigationBean.toLogin();
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -50,10 +69,16 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 		return null;
 	}
 
-	public void logout() throws IOException {
-		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-		ec.invalidateSession();
-		ec.redirect(ec.getRequestContextPath() + "/pages/login.xhtml");
+	public String logout() throws IOException {
+		// Set the paremeter indicating that user is logged in to false
+		setLoggedIn(false);
+
+		// Set logout message
+		FacesMessage msg = new FacesMessage("Logout success!", "INFO MSG");
+		msg.setSeverity(FacesMessage.SEVERITY_INFO);
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+
+		return navigationBean.toLogin();
 	}
 
 	/**
@@ -99,5 +124,21 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 	 */
 	public void setUserRole(String userRole) {
 		this.userRole = userRole;
+	}
+
+	public boolean isLoggedIn() {
+		return loggedIn;
+	}
+
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
+	}
+
+	public NavigationBean getNavigationBean() {
+		return navigationBean;
+	}
+
+	public void setNavigationBean(NavigationBean navigationBean) {
+		this.navigationBean = navigationBean;
 	}
 }
