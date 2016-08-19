@@ -14,6 +14,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
+
 import com.ibm.entity.AccountMaster;
 import com.ibm.entity.DatasetMaster;
 import com.ibm.entity.FeatureMaster;
@@ -26,6 +28,7 @@ public class DataManagedBean extends CommonFacesBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	final static Logger logger = Logger.getLogger(DataManagedBean.class);
 
 	private DatasetMaster masterRecordFromselectedValue;
 	private List<AccountMaster> accountmastersList;

@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 
@@ -43,7 +44,7 @@ public class DataSetRunManageBean extends CommonFacesBean implements Serializabl
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	final static Logger logger = Logger.getLogger(DataSetRunManageBean.class);
 	public DataSetRunManageBean() {
 
 	}

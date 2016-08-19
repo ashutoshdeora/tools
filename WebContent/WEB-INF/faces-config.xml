@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <faces-config
     xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -59,7 +58,6 @@
 			<redirect />
 		</navigation-case>
 	</navigation-rule>
-
 	<converter>
         <description>AutoComplete converter</description>
         <converter-id>dataSetConverter</converter-id>
@@ -67,5 +65,4 @@
         com.ibm.utils.DataSetConverter
         </converter-class>
     </converter>
-
 </faces-config>

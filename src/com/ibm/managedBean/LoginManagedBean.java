@@ -9,8 +9,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
+
+import org.apache.log4j.Logger;
 
 import com.ibm.entity.UserDetail;
 
@@ -22,6 +25,7 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	final static Logger logger = Logger.getLogger(LoginManagedBean.class);
 	private boolean loggedIn;
 
 	@ManagedProperty(value = "#{navigationBean}")
@@ -72,7 +76,9 @@ public class LoginManagedBean extends CommonFacesBean implements Serializable {
 	public String logout() throws IOException {
 		// Set the paremeter indicating that user is logged in to false
 		setLoggedIn(false);
-
+		ExternalContext ec = FacesContext.getCurrentInstance()
+				.getExternalContext();
+		ec.invalidateSession();
 		// Set logout message
 		FacesMessage msg = new FacesMessage("Logout success!", "INFO MSG");
 		msg.setSeverity(FacesMessage.SEVERITY_INFO);

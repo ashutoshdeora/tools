@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -37,14 +38,14 @@ import com.ibm.entity.FeatureMaster;
 
 @ManagedBean
 @RequestScoped
-public class FileUploadView implements Serializable {
+public class FileUploadView  extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	final static Logger logger = Logger.getLogger(FileUploadView.class);
 
-	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
 
 	public FileUploadView() {
 
@@ -57,11 +58,7 @@ public class FileUploadView implements Serializable {
 	private List<FeatureMaster> featureMasters;
 	private List<AccountMaster> accountMasters;
 
-	private EntityManager getEntitymanagerFromCurrent() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
-		return em;
-	}
+
 
 	/**
 	 * 

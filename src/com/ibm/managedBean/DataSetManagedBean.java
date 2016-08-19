@@ -13,6 +13,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
+
 import com.ibm.entity.DatasetMaster;
 import com.ibm.entity.DatasetRun;
 import com.ibm.entity.DatasetRunDefect;
@@ -25,6 +27,7 @@ public class DataSetManagedBean extends CommonFacesBean implements Serializable 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	final static Logger logger = Logger.getLogger(DataSetManagedBean.class);
 	private List<DatasetMaster> datasetMastersList;
 
 
