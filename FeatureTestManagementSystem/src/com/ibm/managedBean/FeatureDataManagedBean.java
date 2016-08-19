@@ -30,7 +30,7 @@ import com.ibm.model.FeatureRunModelBean;
 
 @ManagedBean
 @ViewScoped
-public class FeatureDataManagedBean implements Serializable {
+public class FeatureDataManagedBean extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ public class FeatureDataManagedBean implements Serializable {
 	private int number3 = 60;
 	private String[] rolloutOption;
 
-	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
+
 
 	private List<FeatureRunModelBean> featurDataList;
 
@@ -50,15 +50,7 @@ public class FeatureDataManagedBean implements Serializable {
 
 	}
 
-	/**
-	 * 
-	 * @return entityManager
-	 */
-	private EntityManager getEntitymanagerFromCurrent() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
-		return em;
-	}
+
 
 	@PostConstruct
 	public void populateFeatureAllList() {

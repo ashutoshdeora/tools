@@ -20,13 +20,12 @@ import com.ibm.entity.FeatureMaster;
 
 @ManagedBean
 @ViewScoped
-public class DataManagedBean implements Serializable {
+public class DataManagedBean extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
 
 	private DatasetMaster masterRecordFromselectedValue;
 	private List<AccountMaster> accountmastersList;
@@ -80,15 +79,7 @@ public class DataManagedBean implements Serializable {
 	public void saveDataSet(ActionEvent actionEvent){
 		showupdatePanel =false;
 	}
-	/**
-	 * 
-	 * @return entityManager
-	 */
-	private EntityManager getEntitymanagerFromCurrent() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
-		return em;
-	}
+	
 
 	/**
 	 * @return the accountmastersList

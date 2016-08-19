@@ -37,7 +37,7 @@ import com.ibm.model.FeatureRunModelBean;
 
 @ManagedBean
 @ViewScoped
-public class DataSetRunManageBean implements Serializable {
+public class DataSetRunManageBean extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
@@ -48,7 +48,7 @@ public class DataSetRunManageBean implements Serializable {
 
 	}
 
-	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
+	
 	private static final String FAILED = "Failed";
 	private static final String PASSEDWWA = "Passed with W/O";
 	private static final String MANAGER = "manager";
@@ -582,11 +582,6 @@ public class DataSetRunManageBean implements Serializable {
 	 * 
 	 * @return entityManager
 	 */
-	private EntityManager getEntitymanagerFromCurrent() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
-		return em;
-	}
 
 	/**
 	 * @return the datasetmastersList

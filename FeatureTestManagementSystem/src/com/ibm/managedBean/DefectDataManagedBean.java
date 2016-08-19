@@ -18,14 +18,14 @@ import com.ibm.entity.DatasetRunDefect;
 
 @ManagedBean
 @ViewScoped
-public class DefectDataManagedBean implements Serializable {
+public class DefectDataManagedBean extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<DatasetRunDefect> datasetRunDefectsList;
-	private static final String PERSISTENCE_UNIT_NAME = "tmorcl";
+
 
 	@PostConstruct
 	private void populateAllDefects() {
@@ -90,15 +90,7 @@ public class DefectDataManagedBean implements Serializable {
 		return temp;
 	}
 
-	/**
-	 * 
-	 * @return entityManager
-	 */
-	private EntityManager getEntitymanagerFromCurrent() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
-		return em;
-	}
+
 
 	/**
 	 * @return the datasetRunDefectsList

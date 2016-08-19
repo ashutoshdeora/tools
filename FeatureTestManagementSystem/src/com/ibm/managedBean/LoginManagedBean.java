@@ -16,7 +16,7 @@ import com.ibm.entity.UserDetail;
 
 @SessionScoped
 @ManagedBean(name = "loginManagedBean")
-public class LoginManagedBean implements Serializable {
+public class LoginManagedBean extends CommonFacesBean implements Serializable {
 
 	/**
 	 * 
